@@ -12,7 +12,6 @@ binsizes = {"1m": 1, "5m": 5, "1h": 60, "1d": 1440}
 batch_size = 750
 binance_client = Client(api_key=binance_api_key, api_secret=binance_api_secret)
 
-
 def minutes_of_new_data(symbol, kline_size, data):
     if len(data) > 0: old = parser.parse(data["timestamp"].iloc[-1])
     old = datetime.strptime('19 Apr 2021', '%d %b %Y')
