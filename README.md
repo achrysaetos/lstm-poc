@@ -2,7 +2,7 @@
 
 *Warning: No one actually does LSTMs correctly when it comes to predicting prices. You have to build your own models from scratch if you want it to be accurate.*
 
-*To Start: pip3 install numpy, tensorflow, keras, pandas, python-binance, python-dateutil; set binance_api_key and binance_api_secret in config.py; initialize virtual env with `source env/bin/activate`*
+*To start: pip3 install numpy, tensorflow, keras, pandas, python-binance, python-dateutil; set binance_api_key and binance_api_secret in config.py; initialize virtual env with* `source env/bin/activate`.
 
 **Why crypto?**
 1) Volatility. Crypto prices change enough for strategies to actually make a difference.
