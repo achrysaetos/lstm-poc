@@ -11,20 +11,21 @@ from config import binance_api_key, binance_api_secret # from config.py
 binsizes = {"1m": 1, "5m": 5, "1h": 60, "1d": 1440}
 batch_size = 750
 binance_client = Client(api_key=binance_api_key, api_secret=binance_api_secret)
+start_date = '19 Apr 2021'
 
 def minutes_of_new_data(symbol, kline_size, data):
     if len(data) > 0: old = parser.parse(data["timestamp"].iloc[-1])
-    old = datetime.strptime('19 Apr 2021', '%d %b %Y')
+    else: old = datetime.strptime(start_date, '%d %b %Y')
     new = pd.to_datetime(binance_client.get_klines(symbol=symbol, interval=kline_size)[-1][0], unit='ms')
     return old, new
 
-def get_all_binance(symbol, kline_size):
+def get_binance_data(symbol, kline_size):
     filename = '%s-%s-data.csv' % (symbol, kline_size)
     if os.path.isfile(filename): data_df = pd.read_csv(filename)
     else: data_df = pd.DataFrame()
     oldest_point, newest_point = minutes_of_new_data(symbol, kline_size, data_df)
     delta_min = (newest_point - oldest_point).total_seconds()/60
-    if oldest_point == datetime.strptime('19 Apr 2021', '%d %b %Y'): print('Downloading all available %s data for %s...' % (kline_size, symbol))
+    if oldest_point == datetime.strptime(start_date, '%d %b %Y'): print('Downloading all available %s data for %s...' % (kline_size, symbol))
     else: print('Downloading %d minutes of new data available for %s...' % (delta_min, symbol))
     klines = binance_client.get_historical_klines(symbol, kline_size, oldest_point.strftime("%d %b %Y %H:%M:%S"), newest_point.strftime("%d %b %Y %H:%M:%S"))
     data = pd.DataFrame(klines, columns = ['timestamp', 'open', 'high', 'low', 'close', 'volume', 'close_time', 'quote_av', 'trades', 'tb_base_av', 'tb_quote_av', 'ignore' ])
@@ -38,4 +39,4 @@ def get_all_binance(symbol, kline_size):
     print('Done!')
     return [float(x) for x in data_df['open'].tolist()]
 
-all_binance = get_all_binance('BTCBUSD', '1m')
+binance_data = get_binance_data('BTCBUSD', '1m')
