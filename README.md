@@ -15,7 +15,7 @@ Random walk tells us we can't predict prices in the short run. Perhaps not in th
 * Can we predict the trend of one stock in the long run? No, too many factors might affect the stock at any point in time.
 * Can we predict the trend of many stocks in the short run? Yes, if we're able to do so with one stock.
 * Can we predict the trend of one stock in the short run? Yes, if efficient markets is even marginally true, it must be predictable.
-<br/>
+\
 * What if we are wrong and the price drops? We lose money.
 * What if we are wrong and the price rises? We neither gain/lose money.
 * What if we are right and the price drops? We neither gain/lose money.
