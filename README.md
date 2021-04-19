@@ -23,5 +23,7 @@ Random walk tells us we can't predict prices in the short run. Perhaps not in th
 * Can we predict the trend of many stocks in the short run? Yes, if we're able to do so with one stock.
 * Can we predict the trend of one stock in the short run? Yes, if efficient markets is even marginally true, it must be predictable.
 
+*Eventually, no inputs will be arbitrary (window size, time steps, etc) -- they will all be determined in real time.*
+
 **Notes:**\
 *Alternatively, we might not even care about the trend of a price at a given moment in time if we know that it is inevitably going to fall or rise anyway. If we can predict the general trend of the price and the feasibility of how much it will fall or rise, we can buy or sell with confidence when the price reaches either of our limits.*

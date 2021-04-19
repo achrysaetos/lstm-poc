@@ -4,29 +4,29 @@ from numpy import array
 from keras.models import Sequential
 from keras.layers import LSTM
 from keras.layers import Dense
-from prep_data import X, y, raw_seq, n_steps
+from prep_data import inputs, outputs, raw_seq, n_steps
 
-def vanilla(X, y, raw_seq, n_steps):
+def vanilla(inputs, outputs, raw_seq, n_steps):
   # reshape from [samples, timesteps] into [samples, timesteps, features]
   n_features = 1
-  X = X.reshape((X.shape[0], X.shape[1], n_features))
+  inputs = inputs.reshape((inputs.shape[0], inputs.shape[1], n_features))
   # define model
   model = Sequential()
   model.add(LSTM(50, activation='relu', input_shape=(n_steps, n_features)))
   model.add(Dense(1))
   model.compile(optimizer='adam', loss='mse')
   # fit model
-  model.fit(X, y, epochs=200, verbose=0)
+  model.fit(inputs, outputs, epochs=200, verbose=0)
   # demonstrate prediction
   x_input = array(raw_seq[-n_steps:])
   x_input = x_input.reshape((1, n_steps, n_features))
   yhat = model.predict(x_input, verbose=0)
   print("Vanilla LSTM prediction:", yhat)
 
-def stacked(X, y, raw_seq, n_steps):
+def stacked(inputs, outputs, raw_seq, n_steps):
   # reshape from [samples, timesteps] into [samples, timesteps, features]
   n_features = 1
-  X = X.reshape((X.shape[0], X.shape[1], n_features))
+  inputs = inputs.reshape((inputs.shape[0], inputs.shape[1], n_features))
   # define model
   model = Sequential()
   model.add(LSTM(50, activation='relu', return_sequences=True, input_shape=(n_steps, n_features)))
@@ -34,7 +34,7 @@ def stacked(X, y, raw_seq, n_steps):
   model.add(Dense(1))
   model.compile(optimizer='adam', loss='mse')
   # fit model
-  model.fit(X, y, epochs=200, verbose=0)
+  model.fit(inputs, outputs, epochs=200, verbose=0)
   # demonstrate prediction
   x_input = array(raw_seq[-n_steps:])
   x_input = x_input.reshape((1, n_steps, n_features))
@@ -42,17 +42,17 @@ def stacked(X, y, raw_seq, n_steps):
   print("Stacked LSTM prediction:", yhat)
 
 from keras.layers import Bidirectional
-def bidirectional(X, y, raw_seq, n_steps):
+def bidirectional(inputs, outputs, raw_seq, n_steps):
   # reshape from [samples, timesteps] into [samples, timesteps, features]
   n_features = 1
-  X = X.reshape((X.shape[0], X.shape[1], n_features))
+  inputs = inputs.reshape((inputs.shape[0], inputs.shape[1], n_features))
   # define model
   model = Sequential()
   model.add(Bidirectional(LSTM(50, activation='relu'), input_shape=(n_steps, n_features)))
   model.add(Dense(1))
   model.compile(optimizer='adam', loss='mse')
   # fit model
-  model.fit(X, y, epochs=200, verbose=0)
+  model.fit(inputs, outputs, epochs=200, verbose=0)
   # demonstrate prediction
   x_input = array(raw_seq[-n_steps:])
   x_input = x_input.reshape((1, n_steps, n_features))
@@ -63,12 +63,12 @@ from keras.layers import Flatten
 from keras.layers import TimeDistributed
 from keras.layers.convolutional import Conv1D
 from keras.layers.convolutional import MaxPooling1D
-def cnn(X, y, raw_seq, n_steps):
+def cnn(inputs, outputs, raw_seq, n_steps):
   # reshape from [samples, timesteps] into [samples, subsequences, timesteps, features]
   n_features = 1
   n_seq = 2
   n_steps = 2
-  X = X.reshape((X.shape[0], n_seq, n_steps, n_features))
+  inputs = inputs.reshape((inputs.shape[0], n_seq, n_steps, n_features))
   # define model
   model = Sequential()
   model.add(TimeDistributed(Conv1D(filters=64, kernel_size=1, activation='relu'), input_shape=(None, n_steps, n_features)))
@@ -78,7 +78,7 @@ def cnn(X, y, raw_seq, n_steps):
   model.add(Dense(1))
   model.compile(optimizer='adam', loss='mse')
   # fit model
-  model.fit(X, y, epochs=500, verbose=0)
+  model.fit(inputs, outputs, epochs=500, verbose=0)
   # demonstrate prediction
   x_input = array(raw_seq[-n_steps:])
   x_input = x_input.reshape((1, n_seq, n_steps, n_features))
@@ -87,12 +87,12 @@ def cnn(X, y, raw_seq, n_steps):
 
 from keras.layers import Flatten
 from keras.layers import ConvLSTM2D
-def conv(X, y, raw_seq, n_steps):
+def conv(inputs, outputs, raw_seq, n_steps):
   # reshape from [samples, timesteps] into [samples, timesteps, rows, columns, features]
   n_features = 1
   n_seq = 2
   n_steps = 2
-  X = X.reshape((X.shape[0], n_seq, 1, n_steps, n_features))
+  inputs = inputs.reshape((inputs.shape[0], n_seq, 1, n_steps, n_features))
   # define model
   model = Sequential()
   model.add(ConvLSTM2D(filters=64, kernel_size=(1,2), activation='relu', input_shape=(n_seq, 1, n_steps, n_features)))
@@ -100,7 +100,7 @@ def conv(X, y, raw_seq, n_steps):
   model.add(Dense(1))
   model.compile(optimizer='adam', loss='mse')
   # fit model
-  model.fit(X, y, epochs=500, verbose=0)
+  model.fit(inputs, outputs, epochs=500, verbose=0)
   # demonstrate prediction
   x_input = array(raw_seq[-n_steps:])
   x_input = x_input.reshape((1, n_seq, 1, n_steps, n_features))
@@ -109,10 +109,10 @@ def conv(X, y, raw_seq, n_steps):
 
 
 # Basic LSTM models for sequential data
-vanilla(X, y, raw_seq, n_steps)
-stacked(X, y, raw_seq, n_steps)
-bidirectional(X, y, raw_seq, n_steps)
+vanilla(inputs, outputs, raw_seq, n_steps)
+stacked(inputs, outputs, raw_seq, n_steps)
+bidirectional(inputs, outputs, raw_seq, n_steps)
 
-# LSTM models generally used for two-dimensional data
-# cnn(X, y, raw_seq, n_steps)
-# conv(X, y, raw_seq, n_steps)
+# LSTM models generally used for 2D image/spatial data
+# cnn(inputs, outputs, raw_seq, n_steps)
+# conv(inputs, outputs, raw_seq, n_steps)

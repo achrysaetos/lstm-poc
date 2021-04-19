@@ -3,10 +3,10 @@ import pandas as pd
 import math
 import os.path
 import time
-from binance.client import Client # python-binance
+from binance.client import Client
 from datetime import timedelta, datetime
-from dateutil import parser # python-dateutil
-from config import binance_api_key, binance_api_secret # config.py env variables
+from dateutil import parser
+from config import binance_api_key, binance_api_secret
 
 binsizes = {"1m": 1, "5m": 5, "1h": 60, "1d": 1440}
 batch_size = 750
