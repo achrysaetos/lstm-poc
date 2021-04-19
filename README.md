@@ -6,7 +6,7 @@
 1) Volatility. Crypto prices change enough for strategies to actually make a difference.
 2) No day trading cap. Individuals can programmatically buy and sell many times a day to optimize their strategies.
 
-**Key Ideas**
+**Key Ideas**\
 We're tring to predict trends, *NOT* prices. In the end, we're actually looking for the probability a price will either go up/down by a large/small margin.
 
 Random walk tells us we can't predict prices in the short run. Perhaps not in the past. I think computers have a better than 50% chance of predicting trends correctly, and therefore, trends can't be purely random.
@@ -15,7 +15,7 @@ Random walk tells us we can't predict prices in the short run. Perhaps not in th
 * Can we predict the trend of one stock in the long run? No, too many factors might affect the stock at any point in time.
 * Can we predict the trend of many stocks in the short run? Yes, if we're able to do so with one stock.
 * Can we predict the trend of one stock in the short run? Yes, if efficient markets is even marginally true, it must be predictable.
-
+<br/>
 * What if we are wrong and the price drops? We lose money.
 * What if we are wrong and the price rises? We neither gain/lose money.
 * What if we are right and the price drops? We neither gain/lose money.
