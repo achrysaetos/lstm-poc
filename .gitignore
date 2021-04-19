@@ -1,3 +1,4 @@
-env
+__pycache__/
+env/
 config.py
 BTCBUSD-1m-data.csv
