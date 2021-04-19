@@ -1,6 +1,7 @@
 
 # univariate data preparation
 from numpy import array
+from get_data import all_binance
 
 # split a univariate sequence into samples
 def split_sequence(sequence, n_steps):
@@ -18,11 +19,8 @@ def split_sequence(sequence, n_steps):
 	return array(X), array(y)
 
 # define input sequence
-raw_seq = [10, 20, 30, 40, 50, 60, 70, 80, 90]
+raw_seq = all_binance[-100:]
 # choose a number of time steps
-n_steps = 3
+n_steps = 5
 # split into samples
 X, y = split_sequence(raw_seq, n_steps)
-# summarize the data
-for i in range(len(X)):
-	print(X[i], y[i])
