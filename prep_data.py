@@ -1,7 +1,7 @@
 
 # univariate data preparation
 from numpy import array
-from get_data import all_binance
+from get_data import all_binance # from get_data.py
 
 # split a univariate sequence into samples
 def split_sequence(sequence, n_steps):

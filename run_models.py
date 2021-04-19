@@ -4,7 +4,7 @@ from numpy import array
 from keras.models import Sequential
 from keras.layers import LSTM
 from keras.layers import Dense
-from prep_data import inputs, outputs, raw_seq, n_steps
+from prep_data import inputs, outputs, raw_seq, n_steps # from prep_data.py
 
 def vanilla(inputs, outputs, raw_seq, n_steps):
   # reshape from [samples, timesteps] into [samples, timesteps, features]
