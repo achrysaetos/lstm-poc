@@ -21,7 +21,7 @@ def vanilla(inputs, outputs, raw_seq, n_steps):
   x_input = array(raw_seq[-n_steps:])
   x_input = x_input.reshape((1, n_steps, n_features))
   yhat = model.predict(x_input, verbose=0)
-  print("Vanilla LSTM prediction:", yhat)
+  return float(yhat[0][0])
 
 def stacked(inputs, outputs, raw_seq, n_steps):
   # reshape from [samples, timesteps] into [samples, timesteps, features]
@@ -39,7 +39,7 @@ def stacked(inputs, outputs, raw_seq, n_steps):
   x_input = array(raw_seq[-n_steps:])
   x_input = x_input.reshape((1, n_steps, n_features))
   yhat = model.predict(x_input, verbose=0)
-  print("Stacked LSTM prediction:", yhat)
+  return float(yhat[0][0])
 
 from keras.layers import Bidirectional
 def bidirectional(inputs, outputs, raw_seq, n_steps):
@@ -57,7 +57,7 @@ def bidirectional(inputs, outputs, raw_seq, n_steps):
   x_input = array(raw_seq[-n_steps:])
   x_input = x_input.reshape((1, n_steps, n_features))
   yhat = model.predict(x_input, verbose=0)
-  print("Bidirectional prediction:", yhat)
+  return float(yhat[0][0])
 
 from keras.layers import Flatten
 from keras.layers import TimeDistributed
@@ -109,9 +109,9 @@ def conv(inputs, outputs, raw_seq, n_steps):
 
 
 # Basic LSTM models for sequential data
-vanilla(inputs, outputs, raw_seq, n_steps)
-stacked(inputs, outputs, raw_seq, n_steps)
-bidirectional(inputs, outputs, raw_seq, n_steps)
+print("Vanilla LSTM prediction:", vanilla(inputs, outputs, raw_seq, n_steps))
+print("Stacked LSTM prediction:", stacked(inputs, outputs, raw_seq, n_steps))
+print("Bidirectional prediction:", bidirectional(inputs, outputs, raw_seq, n_steps))
 
 # LSTM models generally used for 2D image/spatial data
 # cnn(inputs, outputs, raw_seq, n_steps)
