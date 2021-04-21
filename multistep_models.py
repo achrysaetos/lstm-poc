@@ -14,6 +14,24 @@ raw_seq = get_binance_data('BTCBUSD', '1m')[-seq_size:]
 # split into samples
 inputs, outputs = split_sequence_multistep(raw_seq, n_steps_in, n_steps_out)
 
+# univariate multi-step vector-output vanilla lstm example
+def vectoroutput_vanilla(inputs, outputs, raw_seq, n_steps_in, n_steps_out):
+  # reshape from [samples, timesteps] into [samples, timesteps, features]
+  n_features = 1
+  inputs = inputs.reshape((inputs.shape[0], inputs.shape[1], n_features))
+  # define model
+  model = Sequential()
+  model.add(LSTM(100, activation='relu', input_shape=(n_steps_in, n_features)))
+  model.add(Dense(n_steps_out))
+  model.compile(optimizer='adam', loss='mse')
+  # fit model
+  model.fit(inputs, outputs, epochs=50, verbose=0)
+  # demonstrate prediction
+  x_input = array(raw_seq[-n_steps_in:])
+  x_input = x_input.reshape((1, n_steps_in, n_features))
+  yhat = model.predict(x_input, verbose=0)
+  return float(yhat[0][0]), float(yhat[0][1])
+
 # univariate multi-step vector-output stacked lstm example
 def vectoroutput_stacked(inputs, outputs, raw_seq, n_steps_in, n_steps_out):
   # reshape from [samples, timesteps] into [samples, timesteps, features]
@@ -31,7 +49,26 @@ def vectoroutput_stacked(inputs, outputs, raw_seq, n_steps_in, n_steps_out):
   x_input = array(raw_seq[-n_steps_in:])
   x_input = x_input.reshape((1, n_steps_in, n_features))
   yhat = model.predict(x_input, verbose=0)
-  return yhat
+  return float(yhat[0][0]), float(yhat[0][1])
+
+from keras.layers import Bidirectional
+# univariate multi-step vector-output bidirectional lstm example
+def vectoroutput_bidirectional(inputs, outputs, raw_seq, n_steps_in, n_steps_out):
+  # reshape from [samples, timesteps] into [samples, timesteps, features]
+  n_features = 1
+  inputs = inputs.reshape((inputs.shape[0], inputs.shape[1], n_features))
+  # define model
+  model = Sequential()
+  model.add(Bidirectional(LSTM(100, activation='relu'), input_shape=(n_steps_in, n_features)))
+  model.add(Dense(n_steps_out))
+  model.compile(optimizer='adam', loss='mse')
+  # fit model
+  model.fit(inputs, outputs, epochs=50, verbose=0)
+  # demonstrate prediction
+  x_input = array(raw_seq[-n_steps_in:])
+  x_input = x_input.reshape((1, n_steps_in, n_features))
+  yhat = model.predict(x_input, verbose=0)
+  return float(yhat[0][0]), float(yhat[0][1])
 
 from keras.layers import RepeatVector
 from keras.layers import TimeDistributed
@@ -54,11 +91,13 @@ def encoderdecoder_vanilla(inputs, outputs, raw_seq, n_steps_in, n_steps_out):
   x_input = array(raw_seq[-n_steps_in:])
   x_input = x_input.reshape((1, n_steps_in, n_features))
   yhat = model.predict(x_input, verbose=0)
-  return yhat
+  return float(yhat[0][0]), float(yhat[0][1])
 
 
 # Univariate multi-step models for checkpoint gauging
+print("Vector-output vanilla LSTM prediction:", vectoroutput_vanilla(inputs, outputs, raw_seq, n_steps_in, n_steps_out))
 print("Vector-output stacked LSTM prediction:", vectoroutput_stacked(inputs, outputs, raw_seq, n_steps_in, n_steps_out))
+print("Vector-output bidirectional prediction:", vectoroutput_bidirectional(inputs, outputs, raw_seq, n_steps_in, n_steps_out))
 
 # Univariate multi-step models for sequence-to-sequence problems (ie. translation)
 # print("Encoder-decoder vanilla LSTM prediction:", encoderdecoder_vanilla(inputs, outputs, raw_seq, n_steps_in, n_steps_out))
