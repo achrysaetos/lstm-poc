@@ -4,7 +4,14 @@ from numpy import array
 from keras.models import Sequential
 from keras.layers import LSTM
 from keras.layers import Dense
-from prep_data import inputs, outputs, raw_seq, n_steps # from prep_data.py
+from get_data import get_binance_data, split_sequence # from get_data.py
+
+# choose a window and a number of time steps
+seq_size, n_steps = 360, 5
+# define input sequence
+raw_seq = get_binance_data('BTCBUSD', '1m')[-seq_size:]
+# split into samples
+inputs, outputs = split_sequence(raw_seq, n_steps)
 
 def vanilla(inputs, outputs, raw_seq, n_steps):
   # reshape from [samples, timesteps] into [samples, timesteps, features]
@@ -83,7 +90,7 @@ def cnn(inputs, outputs, raw_seq, n_steps):
   x_input = array(raw_seq[-n_steps:])
   x_input = x_input.reshape((1, n_seq, n_steps, n_features))
   yhat = model.predict(x_input, verbose=0)
-  print("Cnn LSTM prediction:", yhat)
+  return float(yhat[0][0])
 
 from keras.layers import Flatten
 from keras.layers import ConvLSTM2D
@@ -105,7 +112,7 @@ def conv(inputs, outputs, raw_seq, n_steps):
   x_input = array(raw_seq[-n_steps:])
   x_input = x_input.reshape((1, n_seq, 1, n_steps, n_features))
   yhat = model.predict(x_input, verbose=0)
-  print("Conv LSTM prediction:", yhat)
+  return float(yhat[0][0])
 
 
 # Basic LSTM models for sequential data
@@ -114,5 +121,5 @@ print("Stacked LSTM prediction:", stacked(inputs, outputs, raw_seq, n_steps))
 print("Bidirectional prediction:", bidirectional(inputs, outputs, raw_seq, n_steps))
 
 # LSTM models generally used for 2D image/spatial data
-# cnn(inputs, outputs, raw_seq, n_steps)
-# conv(inputs, outputs, raw_seq, n_steps)
+# print("Cnn LSTM prediction:", cnn(inputs, outputs, raw_seq, n_steps))
+# print("Conv LSTM prediction:", conv(inputs, outputs, raw_seq, n_steps))

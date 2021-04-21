@@ -18,7 +18,7 @@ def btc_trade_history(msg):
     current_time = now.strftime("%H:%M:%S")
     current_seconds = now.strftime("%S")
     if int(current_seconds) % 60 == 1: 
-        seq_size, n_steps = 360, 5
+        seq_size, n_steps = 60, 3
         raw_seq = get_binance_data('BTCBUSD', '1m')[-seq_size:]
         inputs, outputs = split_sequence(raw_seq, n_steps)
         btc_price["vanilla"] = vanilla(inputs, outputs, raw_seq, n_steps)
