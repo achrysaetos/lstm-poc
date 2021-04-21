@@ -33,6 +33,32 @@ def vectoroutput_stacked(inputs, outputs, raw_seq, n_steps_in, n_steps_out):
   yhat = model.predict(x_input, verbose=0)
   return yhat
 
+from keras.layers import RepeatVector
+from keras.layers import TimeDistributed
+# univariate multi-step encoder-decoder vanilla lstm example
+def encoderdecoder_vanilla(inputs, outputs, raw_seq, n_steps_in, n_steps_out):
+  # reshape from [samples, timesteps] into [samples, timesteps, features]
+  n_features = 1
+  inputs = inputs.reshape((inputs.shape[0], inputs.shape[1], n_features))
+  outputs = outputs.reshape((outputs.shape[0], outputs.shape[1], n_features))
+  # define model
+  model = Sequential()
+  model.add(LSTM(100, activation='relu', input_shape=(n_steps_in, n_features)))
+  model.add(RepeatVector(n_steps_out))
+  model.add(LSTM(100, activation='relu', return_sequences=True))
+  model.add(TimeDistributed(Dense(1)))
+  model.compile(optimizer='adam', loss='mse')
+  # fit model
+  model.fit(inputs, outputs, epochs=100, verbose=0)
+  # demonstrate prediction
+  x_input = array(raw_seq[-n_steps_in:])
+  x_input = x_input.reshape((1, n_steps_in, n_features))
+  yhat = model.predict(x_input, verbose=0)
+  return yhat
 
-# Basic LSTM models for sequential data
+
+# Univariate multi-step models for checkpoint gauging
 print("Vector-output stacked LSTM prediction:", vectoroutput_stacked(inputs, outputs, raw_seq, n_steps_in, n_steps_out))
+
+# Univariate multi-step models for sequence-to-sequence problems (ie. translation)
+# print("Encoder-decoder vanilla LSTM prediction:", encoderdecoder_vanilla(inputs, outputs, raw_seq, n_steps_in, n_steps_out))

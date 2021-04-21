@@ -31,3 +31,4 @@ def split_sequence_multistep(sequence, n_steps_in, n_steps_out):
 		inputs.append(seq_x)
 		outputs.append(seq_y)
 	return array(inputs), array(outputs)
+  
