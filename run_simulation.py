@@ -11,6 +11,7 @@ from run_models import vanilla, stacked, bidirectional
 
 client = Client(api_key=binance_api_key, api_secret=binance_api_secret)
 btc_price = {'error':False, 'change':False}
+wallet = {'cash': 1000000, 'coins': 0, 'value': 1000000}
 
 def btc_trade_history(msg):
     now = datetime.now()
@@ -32,13 +33,21 @@ def btc_trade_history(msg):
         btc_price['close'] = msg['c'] # current day close price
         if btc_price['change']:
             if float(btc_price['close']) > max([btc_price["vanilla"], btc_price["stacked"], btc_price["bidirectional"]]):
-                print("Sell all at", btc_price['close'])
+                if wallet['coins'] > 0:
+                    wallet['cash'] = wallet['coins']*float(btc_price['close'])
+                    wallet['coins'] = 0
+                    print("Sell all at", btc_price['close'])
+                else: print('Cannot sell.')
             elif float(btc_price['close']) < min([btc_price["vanilla"], btc_price["stacked"], btc_price["bidirectional"]]):
-                print("Buy all at", btc_price['close'])
-            else:
-                print("Hold all at", btc_price['close'])
+                if wallet['cash'] > 0:
+                    wallet['coins'] = wallet['cash']/float(btc_price['close'])
+                    wallet['cash'] = 0
+                    print("Buy all at", btc_price['close'])
+                else: print('Cannot buy.')
+            else: print("Hold all at", btc_price['close'])
             btc_price['change'] = not btc_price['change']
-        print(current_time, btc_price['close'])
+        wallet['value'] = wallet['coins']*float(btc_price['close'])+wallet['cash']
+        print(current_time, btc_price['close'], wallet)
     else:
         btc_price['error'] = True
 
