@@ -1,17 +1,18 @@
 
-# univariate lstm example
+# core univariate lstm examples
 from numpy import array
 from keras.models import Sequential
 from keras.layers import LSTM
 from keras.layers import Dense
-from get_data import get_binance_data, split_sequence # from get_data.py
+from get_data import get_binance_data # from get_data.py
+from prep_data import split_sequence_univariate # from prep_data.py
 
 # choose a window and a number of time steps
 seq_size, n_steps = 360, 5
 # define input sequence
 raw_seq = get_binance_data('BTCBUSD', '1m')[-seq_size:]
 # split into samples
-inputs, outputs = split_sequence(raw_seq, n_steps)
+inputs, outputs = split_sequence_univariate(raw_seq, n_steps)
 
 def vanilla(inputs, outputs, raw_seq, n_steps):
   # reshape from [samples, timesteps] into [samples, timesteps, features]
