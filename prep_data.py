@@ -31,4 +31,33 @@ def split_sequence_multistep(sequence, n_steps_in, n_steps_out):
 		inputs.append(seq_x)
 		outputs.append(seq_y)
 	return array(inputs), array(outputs)
-  
+
+# split a multivariate sequence into samples, for multivariate multi-input lstm models
+def split_sequences_multivariate_multiinput(sequences, n_steps):
+	inputs, outputs = list(), list()
+	for i in range(len(sequences)):
+		# find the end of this pattern
+		end_ix = i + n_steps
+		# check if we are beyond the dataset
+		if end_ix > len(sequences):
+			break
+		# gather input and output parts of the pattern
+		seq_x, seq_y = sequences[i:end_ix, :-1], sequences[end_ix-1, -1]
+		inputs.append(seq_x)
+		outputs.append(seq_y)
+	return array(inputs), array(outputs)
+
+# split a multivariate sequence into samples, for multivariate multi-parallel lstm models
+def split_sequences_multivariate_multiparallel(sequences, n_steps):
+	inputs, outputs = list(), list()
+	for i in range(len(sequences)):
+		# find the end of this pattern
+		end_ix = i + n_steps
+		# check if we are beyond the dataset
+		if end_ix > len(sequences)-1:
+			break
+		# gather input and output parts of the pattern
+		seq_x, seq_y = sequences[i:end_ix, :], sequences[end_ix, :]
+		inputs.append(seq_x)
+		outputs.append(seq_y)
+	return array(inputs), array(outputs)
