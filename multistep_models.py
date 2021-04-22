@@ -14,7 +14,6 @@ raw_seq = get_binance_data('BTCBUSD', '1m')[-seq_size:]
 # split into samples
 inputs, outputs = split_sequence_multistep(raw_seq, n_steps_in, n_steps_out)
 
-# univariate multi-step vector-output vanilla lstm example
 def vectoroutput_vanilla(inputs, outputs, raw_seq, n_steps_in, n_steps_out):
   # reshape from [samples, timesteps] into [samples, timesteps, features]
   n_features = 1
@@ -32,7 +31,6 @@ def vectoroutput_vanilla(inputs, outputs, raw_seq, n_steps_in, n_steps_out):
   yhat = model.predict(x_input, verbose=0)
   return float(yhat[0][0]), float(yhat[0][1])
 
-# univariate multi-step vector-output stacked lstm example
 def vectoroutput_stacked(inputs, outputs, raw_seq, n_steps_in, n_steps_out):
   # reshape from [samples, timesteps] into [samples, timesteps, features]
   n_features = 1
@@ -52,7 +50,6 @@ def vectoroutput_stacked(inputs, outputs, raw_seq, n_steps_in, n_steps_out):
   return float(yhat[0][0]), float(yhat[0][1])
 
 from keras.layers import Bidirectional
-# univariate multi-step vector-output bidirectional lstm example
 def vectoroutput_bidirectional(inputs, outputs, raw_seq, n_steps_in, n_steps_out):
   # reshape from [samples, timesteps] into [samples, timesteps, features]
   n_features = 1
@@ -72,7 +69,6 @@ def vectoroutput_bidirectional(inputs, outputs, raw_seq, n_steps_in, n_steps_out
 
 from keras.layers import RepeatVector
 from keras.layers import TimeDistributed
-# univariate multi-step encoder-decoder vanilla lstm example
 def encoderdecoder_vanilla(inputs, outputs, raw_seq, n_steps_in, n_steps_out):
   # reshape from [samples, timesteps] into [samples, timesteps, features]
   n_features = 1

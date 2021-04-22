@@ -16,7 +16,7 @@ We're tring to predict trends, *NOT* prices. In the end, we're actually looking 
 * What if we are right and the price drops? We neither gain/lose money.
 * What if we are right and the price rises? We make money.
 
-Random walk tells us we can't predict prices in the short run. Perhaps not in the past. I think computers have a better than 50% chance of predicting trends correctly, and therefore, trends can't be purely random.
+Random walk tells us we can't predict prices in the short run. But if computers have a better than 50% chance of predicting trends correctly, trends can't be purely random.
 
 * Can we predict the trend of many stocks in the long run? Yes, that's why portfolios exist.
 * Can we predict the trend of one stock in the long run? No, too many factors might affect the stock at any point in time.

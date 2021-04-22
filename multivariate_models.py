@@ -24,7 +24,6 @@ dataset = hstack((in_seq1, in_seq2, out_seq))
 inputs_multiinput, outputs_multiinput = split_sequences_multivariate_multiinput(dataset, n_steps)
 inputs_multiparallel, outputs_multiparallel = split_sequences_multivariate_multiparallel(dataset, n_steps)
 
-# multivariate multi-input vanilla lstm example
 def multiinput_vanilla(inputs_multiinput, outputs_multiinput, n_steps, in_seq1, in_seq2):
   # the dataset knows the number of features, e.g. 2
   n_features = inputs_multiinput.shape[2]
@@ -41,7 +40,6 @@ def multiinput_vanilla(inputs_multiinput, outputs_multiinput, n_steps, in_seq1, 
   yhat = model.predict(x_input, verbose=0)
   return float(yhat[0][0])
 
-# multivariate multi-input stacked lstm example
 def multiinput_stacked(inputs_multiinput, outputs_multiinput, n_steps, in_seq1, in_seq2):
   # the dataset knows the number of features, e.g. 2
   n_features = inputs_multiinput.shape[2]
@@ -60,7 +58,6 @@ def multiinput_stacked(inputs_multiinput, outputs_multiinput, n_steps, in_seq1, 
   return float(yhat[0][0])
 
 from keras.layers import Bidirectional
-# multivariate multi-input bidirectional lstm example
 def multiinput_bidirectional(inputs_multiinput, outputs_multiinput, n_steps, in_seq1, in_seq2):
   # the dataset knows the number of features, e.g. 2
   n_features = inputs_multiinput.shape[2]
@@ -77,7 +74,6 @@ def multiinput_bidirectional(inputs_multiinput, outputs_multiinput, n_steps, in_
   yhat = model.predict(x_input, verbose=0)
   return float(yhat[0][0])
 
-# multivariate multi-parallel vanilla lstm example
 def multiparallel_vanilla(inputs_multiparallel, outputs_multiparallel, n_steps, in_seq1, in_seq2):
   # the dataset knows the number of features, e.g. 2
   n_features = inputs_multiparallel.shape[2]
@@ -94,7 +90,6 @@ def multiparallel_vanilla(inputs_multiparallel, outputs_multiparallel, n_steps, 
   yhat = model.predict(x_input, verbose=0)
   return float(yhat[0][0]), float(yhat[0][1])
 
-# multivariate multi-parallel stacked lstm example
 def multiparallel_stacked(inputs_multiparallel, outputs_multiparallel, n_steps, in_seq1, in_seq2):
   # the dataset knows the number of features, e.g. 2
   n_features = inputs_multiparallel.shape[2]
@@ -113,7 +108,6 @@ def multiparallel_stacked(inputs_multiparallel, outputs_multiparallel, n_steps, 
   return float(yhat[0][0]), float(yhat[0][1])
 
 from keras.layers import Bidirectional
-# multivariate multi-parallel bidirectional lstm example
 def multiparallel_bidirectional(inputs_multiparallel, outputs_multiparallel, n_steps, in_seq1, in_seq2):
   # the dataset knows the number of features, e.g. 2
   n_features = inputs_multiparallel.shape[2]
