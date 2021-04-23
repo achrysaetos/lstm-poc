@@ -84,7 +84,9 @@ def vanilla_ii(inputs_ii, outputs_ii, n_steps_in, n_steps_out, in_seq1, in_seq2)
   # define model
   model = Sequential()
   model.add(LSTM(200, activation='relu', input_shape=(n_steps_in, n_features)))
-  model.add(Dense(n_steps_out, n_features))
+  model.add(Dense(n_steps_out))
+  model.add(LSTM(200, activation='relu', input_shape=(n_steps_in, n_features)))
+  model.add(Dense(n_features))
   model.compile(optimizer='adam', loss='mse')
   # fit model
   model.fit(inputs_ii, outputs_ii, epochs=300, verbose=0)
