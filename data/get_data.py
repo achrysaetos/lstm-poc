@@ -6,7 +6,10 @@ import time
 from binance.client import Client
 from datetime import timedelta, datetime
 from dateutil import parser
-from config import binance_api_key, binance_api_secret # from config.py
+
+import sys
+sys.path.insert(0, '..')
+from config import binance_api_key, binance_api_secret
 
 binsizes = {"1m": 1, "5m": 5, "1h": 60, "1d": 1440}
 binance_client = Client(api_key=binance_api_key, api_secret=binance_api_secret)

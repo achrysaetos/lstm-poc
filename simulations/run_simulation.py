@@ -4,10 +4,12 @@ from binance.websockets import BinanceSocketManager
 from twisted.internet import reactor
 from datetime import datetime
 
-from config import binance_api_key, binance_api_secret # from config.py
-from get_data import get_binance_data
-from prep_data import split_sequence
-from run_models import vanilla, stacked, bidirectional
+import sys
+sys.path.insert(0, '..')
+from config import binance_api_key, binance_api_secret
+from data.get_data import get_binance_data
+from data.prep_data import split_sequence
+from data.univariate import vanilla, stacked, bidirectional
 
 client = Client(api_key=binance_api_key, api_secret=binance_api_secret)
 btc_price = {'error':False, 'change':False}
