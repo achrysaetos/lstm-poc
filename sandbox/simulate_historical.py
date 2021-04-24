@@ -3,6 +3,7 @@ from binance.client import Client
 from binance.websockets import BinanceSocketManager
 from twisted.internet import reactor
 from datetime import datetime
+import csv
 
 import sys
 sys.path.insert(0, '..')
@@ -33,22 +34,47 @@ def trade(wallet, buy=False, sell=False):
 
 from data.prep_data import split_sequence_univariate
 from models.univariate import vanilla, stacked, bidirectional
-def simulate_univariate(msg):
+def simulate_univariate():
     seq_size, n_steps = 360, 5
     open_seq = get_binance_data('BTCBUSD', '1m', download=False, col_name='open')
     close_seq = get_binance_data('BTCBUSD', '1m', download=False, col_name='close')
-    for i in range(len(open_seq)-seq_size):
-        raw_seq = open_seq[i:seq_size+i]
-        inputs, outputs = split_sequence_univariate(raw_seq, n_steps)
-        btc_price["vanilla"] = vanilla(inputs, outputs, raw_seq, n_steps)
-        btc_price["stacked"] = stacked(inputs, outputs, raw_seq, n_steps)
-        btc_price["bidirectional"] = bidirectional(inputs, outputs, raw_seq, n_steps)
-        btc_price['open'], btc_price['close'] = open_seq[i], close_seq[i]
-        if float(btc_price['open']) > max([btc_price["vanilla"], btc_price["stacked"], btc_price["bidirectional"]]):
-            trade(wallet, sell=True)
-        elif float(btc_price['open']) < min([btc_price["vanilla"], btc_price["stacked"], btc_price["bidirectional"]]):
-            trade(wallet, buy=True)
-        print(i, btc_price['open'], trade(wallet))
+    wallet = {'cash': 1000000, 'coins': 0, 'value': 1000000}
+    w1 = {'cash': 1000000, 'coins': 0, 'value': 1000000}
+    w2 = {'cash': 1000000, 'coins': 0, 'value': 1000000}
+    w3 = {'cash': 1000000, 'coins': 0, 'value': 1000000}
+    wX = {'cash': 0, 'coins': 1000000/open_seq[0], 'value': 1000000}
+    with open('univariate.csv', mode='w') as univariate:
+        univariate_writer = csv.writer(univariate, delimiter=',', quotechar='"', quoting=csv.QUOTE_NONNUMERIC)
+        for i in range(len(open_seq)-seq_size):
+            raw_seq = open_seq[i:seq_size+i]
+            inputs, outputs = split_sequence_univariate(raw_seq, n_steps)
+            btc_price["vanilla"] = vanilla(inputs, outputs, raw_seq, n_steps)
+            btc_price["stacked"] = stacked(inputs, outputs, raw_seq, n_steps)
+            btc_price["bidirectional"] = bidirectional(inputs, outputs, raw_seq, n_steps)
+            btc_price['open'], btc_price['close'] = open_seq[i], close_seq[i]
+            if float(btc_price['open']) > btc_price["vanilla"]:
+                trade(w1, sell=True)
+            elif float(btc_price['open']) < btc_price["vanilla"]:
+                trade(w1, buy=True)
+            if float(btc_price['open']) > btc_price["stacked"]:
+                trade(w2, sell=True)
+            elif float(btc_price['open']) < btc_price["stacked"]:
+                trade(w2, buy=True)
+            if float(btc_price['open']) > btc_price["bidirectional"]:
+                trade(w3, sell=True)
+            elif float(btc_price['open']) < btc_price["bidirectional"]:
+                trade(w3, buy=True)
+            if float(btc_price['open']) > max([btc_price["vanilla"], btc_price["stacked"], btc_price["bidirectional"]]):
+                trade(wallet, sell=True)
+            elif float(btc_price['open']) < min([btc_price["vanilla"], btc_price["stacked"], btc_price["bidirectional"]]):
+                trade(wallet, buy=True)
+            trade(wX)
+            univariate_writer.writerow([i, w1['value'], w2['value'], w3['value'], wallet['value'], wX['value']])
+            print(i, btc_price['open'], trade(w1))
+            print(i, btc_price['open'], trade(w2))
+            print(i, btc_price['open'], trade(w3))
+            print(i, btc_price['open'], trade(wallet))
+            print(i, btc_price['open'], trade(wX))
 
 from data.prep_data import split_sequence_multistep
 from models.univariate_multistep import vectoroutput_vanilla, vectoroutput_stacked, vectoroutput_bidirectional
