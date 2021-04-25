@@ -13,7 +13,7 @@ from prep_data import split_sequences_multivariate_multistep, split_sequences_mu
 # choose a window and a number of time steps
 seq_size, n_steps_in, n_steps_out = 360, 5, 2
 # define input sequence
-in_seq1 = array(get_binance_data('BTCBUSD', '1m', download=True, col_name='high')[-seq_size:])
+in_seq1 = array(get_binance_data('BTCBUSD', '1m', download=True, col_name='close')[-seq_size:])
 in_seq2 = array(get_binance_data('BTCBUSD', '1m', download=False, col_name='open')[-seq_size:])
 out_seq = array([in_seq1[i]-in_seq2[i] for i in range(len(in_seq1))])
 # convert to [rows, columns] structure

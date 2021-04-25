@@ -55,11 +55,11 @@ def simulate_univariate_multistep(msg):
     else:
         btc_price['error'] = True
     if int(seconds) % 60 == 0:
-        if btc_price['sell_next_period'] and btc_price['close'] < btc_price['prev_period_price'] and float(btc_price['close']) > max([btc_price["vanilla"][1], btc_price["stacked"][1], btc_price["bidirectional"][1]]):
+        if btc_price['sell_next_period'] and float(btc_price['close']) < btc_price['prev_period_price'] and float(btc_price['close']) > max([btc_price["vanilla"][1], btc_price["stacked"][1], btc_price["bidirectional"][1]]):
             print("Sell this period:", btc_price['close'], ">", btc_price["vanilla"][1], btc_price["stacked"][1], btc_price["bidirectional"][1])
             trade(wallet, sell=True)
             btc_price['sell_next_period'] = False
-        elif btc_price['buy_next_period'] and btc_price['close'] > btc_price['prev_period_price'] and float(btc_price['close']) < min([btc_price["vanilla"][1], btc_price["stacked"][1], btc_price["bidirectional"][1]]):
+        elif btc_price['buy_next_period'] and float(btc_price['close']) > btc_price['prev_period_price'] and float(btc_price['close']) < min([btc_price["vanilla"][1], btc_price["stacked"][1], btc_price["bidirectional"][1]]):
             print("Buy this period:", btc_price['close'], "<", btc_price["vanilla"][1], btc_price["stacked"][1], btc_price["bidirectional"][1])
             trade(wallet, buy=True)
             btc_price['buy_next_period'] = False
@@ -69,11 +69,11 @@ def simulate_univariate_multistep(msg):
         refresh()
         if float(btc_price['close']) > max([btc_price["vanilla"][0], btc_price["stacked"][0], btc_price["bidirectional"][0]]):
             btc_price['sell_next_period'] = True
-            btc_price['prev_period_price'] = btc_price['close']
+            btc_price['prev_period_price'] = float(btc_price['close'])
             print("Sell next period:", btc_price['close'], ">", btc_price["vanilla"][0], btc_price["stacked"][0], btc_price["bidirectional"][0])
         elif float(btc_price['close']) < min([btc_price["vanilla"][0], btc_price["stacked"][0], btc_price["bidirectional"][0]]):
             btc_price['buy_next_period'] = True
-            btc_price['prev_period_price'] = btc_price['close']
+            btc_price['prev_period_price'] = float(btc_price['close'])
             print("Buy next period:", btc_price['close'], "<", btc_price["vanilla"][0], btc_price["stacked"][0], btc_price["bidirectional"][0])
         else:
             print('No trade for next period -- unacceptable margin of error.')
