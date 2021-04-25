@@ -236,8 +236,8 @@ def simulate_multivariate_multistep():
     with open('multivariate_multistep.csv', mode='w') as multivariate_multistep:
         multivariate_multistep_writer = csv.writer(multivariate_multistep, delimiter=',', quotechar='"', quoting=csv.QUOTE_NONNUMERIC)
         for i in range(len(open_seq)-seq_size):
-            in_seq1 = close_seq[i:seq_size+i]
-            in_seq2 = open_seq[i:seq_size+i]
+            in_seq1 = array(close_seq[i:seq_size+i])
+            in_seq2 = array(open_seq[i:seq_size+i])
             out_seq = array([in_seq1[i]-in_seq2[i] for i in range(len(in_seq1))])
             # convert to [rows, columns] structure
             in_seq1 = in_seq1.reshape((len(in_seq1), 1))
@@ -275,10 +275,10 @@ def simulate_multivariate_multistep():
             print(i, btc_price['open'], trade(wallet))
             print(i, btc_price['open'], trade(wX))
 
-simulate_multivariate_multistep()
 """
 simulate_univariate()
 simulate_univariate_multistep()
 simulate_multivariate_multiinput()
 simulate_multivariate_multiparallel()
+simulate_multivariate_multistep()
 """
