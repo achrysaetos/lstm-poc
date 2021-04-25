@@ -81,7 +81,7 @@ def simulate_univariate():
 from data.prep_data import split_sequence_multistep
 from models.univariate_multistep import vectoroutput_vanilla, vectoroutput_stacked, vectoroutput_bidirectional
 def simulate_univariate_multistep():
-    seq_size, n_steps_in, n_steps_out = 360, 5, 2
+    seq_size, n_steps_in, n_steps_out = 60, 3, 2
     open_seq = get_binance_data('BTCBUSD', '1m', download=False, col_name='open')
     close_seq = get_binance_data('BTCBUSD', '1m', download=False, col_name='close')
     wallet = {'cash': 1000000, 'coins': 0, 'value': 1000000}
@@ -98,21 +98,21 @@ def simulate_univariate_multistep():
             btc_price["stacked"] = vectoroutput_stacked(inputs, outputs, raw_seq, n_steps_in, n_steps_out)
             btc_price["bidirectional"] = vectoroutput_bidirectional(inputs, outputs, raw_seq, n_steps_in, n_steps_out)
             btc_price['open'], btc_price['close'] = open_seq[i], close_seq[i]
-            if float(btc_price['open']) > btc_price["vanilla"][0] and float(btc_price['close']) > btc_price["vanilla"][1]:
+            if float(btc_price['open']) > btc_price["vanilla"][0] and btc_price['close'] < btc_price['open'] and float(btc_price['close']) > btc_price["vanilla"][1]:
                 trade(w1, sell=True)
-            elif float(btc_price['open']) < btc_price["vanilla"][0] and float(btc_price['close']) < btc_price["vanilla"][1]:
+            elif float(btc_price['open']) < btc_price["vanilla"][0] and btc_price['close'] > btc_price['open'] and float(btc_price['close']) < btc_price["vanilla"][1]:
                 trade(w1, buy=True)
-            if float(btc_price['open']) > btc_price["stacked"][0] and float(btc_price['close']) > btc_price["stacked"][1]:
+            if float(btc_price['open']) > btc_price["stacked"][0] and btc_price['close'] < btc_price['open'] and float(btc_price['close']) > btc_price["stacked"][1]:
                 trade(w2, sell=True)
-            elif float(btc_price['open']) < btc_price["stacked"][0] and float(btc_price['close']) < btc_price["stacked"][1]:
+            elif float(btc_price['open']) < btc_price["stacked"][0] and btc_price['close'] > btc_price['open'] and float(btc_price['close']) < btc_price["stacked"][1]:
                 trade(w2, buy=True)
-            if float(btc_price['open']) > btc_price["bidirectional"][0] and float(btc_price['close']) > btc_price["bidirectional"][1]:
+            if float(btc_price['open']) > btc_price["bidirectional"][0] and btc_price['close'] < btc_price['open'] and float(btc_price['close']) > btc_price["bidirectional"][1]:
                 trade(w3, sell=True)
-            elif float(btc_price['open']) < btc_price["bidirectional"][0] and float(btc_price['close']) < btc_price["bidirectional"][1]:
+            elif float(btc_price['open']) < btc_price["bidirectional"][0] and btc_price['close'] > btc_price['open'] and float(btc_price['close']) < btc_price["bidirectional"][1]:
                 trade(w3, buy=True)
-            if float(btc_price['open']) > max([btc_price["vanilla"][0], btc_price["stacked"][0], btc_price["bidirectional"][0]]) and float(btc_price['close']) > max([btc_price["vanilla"][1], btc_price["stacked"][1], btc_price["bidirectional"][1]]):
+            if float(btc_price['open']) > max([btc_price["vanilla"][0], btc_price["stacked"][0], btc_price["bidirectional"][0]]) and btc_price['close'] < btc_price['open'] and float(btc_price['close']) > max([btc_price["vanilla"][1], btc_price["stacked"][1], btc_price["bidirectional"][1]]):
                 trade(wallet, sell=True)
-            elif float(btc_price['open']) < min([btc_price["vanilla"][0], btc_price["stacked"][0], btc_price["bidirectional"][0]]) and float(btc_price['close']) < min([btc_price["vanilla"][1], btc_price["stacked"][1], btc_price["bidirectional"][1]]):
+            elif float(btc_price['open']) < min([btc_price["vanilla"][0], btc_price["stacked"][0], btc_price["bidirectional"][0]]) and btc_price['close'] > btc_price['open'] and float(btc_price['close']) < min([btc_price["vanilla"][1], btc_price["stacked"][1], btc_price["bidirectional"][1]]):
                 trade(wallet, buy=True)
             trade(wX)
             univariate_multistep_writer.writerow([i, w1['value'], w2['value'], w3['value'], wallet['value'], wX['value']])
@@ -223,9 +223,9 @@ def simulate_multivariate_multiparallel():
             print(i, btc_price['open'], trade(wX))
 
 
-simulate_multivariate_multiparallel()
 """
 simulate_univariate()
 simulate_univariate_multistep()
 simulate_multivariate_multiinput()
+simulate_multivariate_multiparallel()
 """

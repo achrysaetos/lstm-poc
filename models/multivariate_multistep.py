@@ -26,6 +26,8 @@ dataset = hstack((in_seq1, in_seq2, out_seq))
 inputs, outputs = split_sequences_multivariate_multistep(dataset, n_steps_in, n_steps_out)
 inputs_ii, outputs_ii = split_sequences_multivariate_multistep_ii(dataset, n_steps_in, n_steps_out) 
 
+# Multivariate multi-step models for triangulating predictions in future checkpoints---------------------------------------------
+
 # multivariate multi-step vanilla lstm example
 def vanilla(inputs, outputs, n_steps_in, n_steps_out, in_seq1, in_seq2):
   # the dataset knows the number of features, e.g. 2
@@ -79,6 +81,8 @@ def bidirectional(inputs, outputs, n_steps_in, n_steps_out, in_seq1, in_seq2):
   yhat = model.predict(x_input, verbose=0)
   return float(yhat[0][0]), float(yhat[0][1])
 
+# Multivariate multi-step models for predicting multiple factors in future checkpoints-------------------------------------------
+
 # multivariate multi-step vanilla lstm example
 def vanilla_ii(inputs_ii, outputs_ii, n_steps_in, n_steps_out, in_seq1, in_seq2):
   # the dataset knows the number of features, e.g. 2
@@ -97,14 +101,3 @@ def vanilla_ii(inputs_ii, outputs_ii, n_steps_in, n_steps_out, in_seq1, in_seq2)
   x_input = x_input.reshape((1, n_steps_in, n_features))
   yhat = model.predict(x_input, verbose=0)
   return yhat
-
-
-# Multivariate multi-step models for triangulating predictions in future checkpoints
-# print("Multi-input vanilla LSTM prediction:", vanilla(inputs, outputs, n_steps_in, n_steps_out, in_seq1, in_seq2))
-# print("Multi-input stacked LSTM prediction:", stacked(inputs, outputs, n_steps_in, n_steps_out, in_seq1, in_seq2))
-# print("Multi-input bidirectional prediction:", bidirectional(inputs, outputs, n_steps_in, n_steps_out, in_seq1, in_seq2))
-
-# Multivariate multi-step models for predicting multiple factors in future checkpoints
-print("Multi-parallel vanilla LSTM prediction:", vanilla_ii(inputs_ii, outputs_ii, n_steps_in, n_steps_out, in_seq1, in_seq2))
-# print("Multi-parallel stacked LSTM prediction:", stacked_ii(inputs_ii, outputs_ii, n_steps_in, n_steps_out, in_seq1, in_seq2))
-# print("Multi-parallel bidirectional prediction:", bidirectional_ii(inputs_ii, outputs_ii, n_steps_in, n_steps_out, in_seq1, in_seq2))

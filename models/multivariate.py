@@ -26,6 +26,8 @@ dataset = hstack((in_seq1, in_seq2, out_seq))
 inputs_multiinput, outputs_multiinput = split_sequences_multivariate_multiinput(dataset, n_steps)
 inputs_multiparallel, outputs_multiparallel = split_sequences_multivariate_multiparallel(dataset, n_steps)
 
+# Multivariate multi-input models for triangulating predictions------------------------------------------------------------------
+
 def multiinput_vanilla(inputs_multiinput, outputs_multiinput, n_steps, in_seq1, in_seq2):
   # the dataset knows the number of features, e.g. 2
   n_features = inputs_multiinput.shape[2]
@@ -76,6 +78,8 @@ def multiinput_bidirectional(inputs_multiinput, outputs_multiinput, n_steps, in_
   yhat = model.predict(x_input, verbose=0)
   return float(yhat[0][0])
 
+# Multivariate multi-parallel models for predicting multiple factors-------------------------------------------------------------
+
 def multiparallel_vanilla(inputs_multiparallel, outputs_multiparallel, n_steps, in_seq1, in_seq2):
   # the dataset knows the number of features, e.g. 2
   n_features = inputs_multiparallel.shape[2]
@@ -125,14 +129,3 @@ def multiparallel_bidirectional(inputs_multiparallel, outputs_multiparallel, n_s
   x_input = x_input.reshape((1, n_steps, n_features))
   yhat = model.predict(x_input, verbose=0)
   return float(yhat[0][0]), float(yhat[0][1]), float(yhat[0][2])
-
-
-# Multivariate multi-input models for triangulating predictions
-print("Multi-input vanilla LSTM prediction:", multiinput_vanilla(inputs_multiinput, outputs_multiinput, n_steps, in_seq1, in_seq2))
-print("Multi-input stacked LSTM prediction:", multiinput_stacked(inputs_multiinput, outputs_multiinput, n_steps, in_seq1, in_seq2))
-print("Multi-input bidirectional prediction:", multiinput_bidirectional(inputs_multiinput, outputs_multiinput, n_steps, in_seq1, in_seq2))
-
-# Multivariate multi-parallel models for predicting multiple factors
-print("Multi-parallel vanilla LSTM prediction:", multiparallel_vanilla(inputs_multiparallel, outputs_multiparallel, n_steps, in_seq1, in_seq2))
-print("Multi-parallel stacked LSTM prediction:", multiparallel_stacked(inputs_multiparallel, outputs_multiparallel, n_steps, in_seq1, in_seq2))
-print("Multi-parallel bidirectional prediction:", multiparallel_bidirectional(inputs_multiparallel, outputs_multiparallel, n_steps, in_seq1, in_seq2))
