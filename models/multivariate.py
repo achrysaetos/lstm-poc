@@ -13,7 +13,7 @@ from prep_data import split_sequences_multivariate_multiinput, split_sequences_m
 # choose a window and a number of time steps
 seq_size, n_steps = 360, 5
 # define input sequence
-in_seq1 = array(get_binance_data('BTCBUSD', '1m', download=True, col_name='high')[-seq_size:])
+in_seq1 = array(get_binance_data('BTCBUSD', '1m', download=True, col_name='close')[-seq_size:])
 in_seq2 = array(get_binance_data('BTCBUSD', '1m', download=False, col_name='open')[-seq_size:])
 out_seq = array([in_seq1[i]-in_seq2[i] for i in range(len(in_seq1))])
 # convert to [rows, columns] structure
@@ -90,7 +90,7 @@ def multiparallel_vanilla(inputs_multiparallel, outputs_multiparallel, n_steps, 
   x_input = array([[a,b,a-b] for a,b in zip(in_seq1[-n_steps:],in_seq2[-n_steps:])])
   x_input = x_input.reshape((1, n_steps, n_features))
   yhat = model.predict(x_input, verbose=0)
-  return float(yhat[0][0]), float(yhat[0][1])
+  return float(yhat[0][0]), float(yhat[0][1]), float(yhat[0][2])
 
 def multiparallel_stacked(inputs_multiparallel, outputs_multiparallel, n_steps, in_seq1, in_seq2):
   # the dataset knows the number of features, e.g. 2
@@ -107,7 +107,7 @@ def multiparallel_stacked(inputs_multiparallel, outputs_multiparallel, n_steps, 
   x_input = array([[a,b,a-b] for a,b in zip(in_seq1[-n_steps:],in_seq2[-n_steps:])])
   x_input = x_input.reshape((1, n_steps, n_features))
   yhat = model.predict(x_input, verbose=0)
-  return float(yhat[0][0]), float(yhat[0][1])
+  return float(yhat[0][0]), float(yhat[0][1]), float(yhat[0][2])
 
 from keras.layers import Bidirectional
 def multiparallel_bidirectional(inputs_multiparallel, outputs_multiparallel, n_steps, in_seq1, in_seq2):
@@ -124,7 +124,7 @@ def multiparallel_bidirectional(inputs_multiparallel, outputs_multiparallel, n_s
   x_input = array([[a,b,a-b] for a,b in zip(in_seq1[-n_steps:],in_seq2[-n_steps:])])
   x_input = x_input.reshape((1, n_steps, n_features))
   yhat = model.predict(x_input, verbose=0)
-  return float(yhat[0][0]), float(yhat[0][1])
+  return float(yhat[0][0]), float(yhat[0][1]), float(yhat[0][2])
 
 
 # Multivariate multi-input models for triangulating predictions

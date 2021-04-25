@@ -3,3 +3,6 @@ env/
 config.py
 BTCBUSD-1m-data.csv
 univariate.csv
+univariate_multistep.csv
+multivariate_multiinput.csv
+multivariate_multiparallel.csv
