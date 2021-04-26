@@ -17,11 +17,12 @@ wallet = {'cash': 1000000, 'coins': 0, 'value': 1000000}
 
 def refresh():
     seq_size, n_steps_in, n_steps_out = 360, 5, 2
+    batch_size, num_epochs = 60, 100
     raw_seq = get_binance_data('BTCBUSD', '1m')[-seq_size:]
     inputs, outputs = split_sequence_multistep(raw_seq, n_steps_in, n_steps_out)
-    btc_price["vanilla"] = vectoroutput_vanilla(inputs, outputs, raw_seq, n_steps_in, n_steps_out)
-    btc_price["stacked"] = vectoroutput_stacked(inputs, outputs, raw_seq, n_steps_in, n_steps_out)
-    btc_price["bidirectional"] = vectoroutput_bidirectional(inputs, outputs, raw_seq, n_steps_in, n_steps_out)
+    btc_price["vanilla"] = vectoroutput_vanilla(inputs, outputs, raw_seq, n_steps_in, n_steps_out, batch_size, num_epochs)
+    btc_price["stacked"] = vectoroutput_stacked(inputs, outputs, raw_seq, n_steps_in, n_steps_out, batch_size, num_epochs)
+    btc_price["bidirectional"] = vectoroutput_bidirectional(inputs, outputs, raw_seq, n_steps_in, n_steps_out, batch_size, num_epochs)
     print("Vanilla LSTM prediction:", btc_price["vanilla"])
     print("Stacked LSTM prediction:", btc_price["stacked"])
     print("Bidirectional prediction:", btc_price["bidirectional"])

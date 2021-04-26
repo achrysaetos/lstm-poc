@@ -37,7 +37,8 @@ def trade(wallet, buy=False, sell=False):
 from data.prep_data import split_sequence_univariate
 from models.univariate import vanilla, stacked, bidirectional
 def simulate_univariate():
-    seq_size, n_steps = 360, 5
+    seq_size, n_steps = 60, 3
+    batch_size, num_epochs = 60, 100
     open_seq = get_binance_data('BTCBUSD', '1m', download=False, col_name='open')
     close_seq = get_binance_data('BTCBUSD', '1m', download=False, col_name='close')
     wallet = {'cash': 1000000, 'coins': 0, 'value': 1000000}
@@ -50,9 +51,9 @@ def simulate_univariate():
         for i in range(len(open_seq)-seq_size):
             raw_seq = open_seq[i:seq_size+i]
             inputs, outputs = split_sequence_univariate(raw_seq, n_steps)
-            btc_price["vanilla"] = vanilla(inputs, outputs, raw_seq, n_steps)
-            btc_price["stacked"] = stacked(inputs, outputs, raw_seq, n_steps)
-            btc_price["bidirectional"] = bidirectional(inputs, outputs, raw_seq, n_steps)
+            btc_price["vanilla"] = vanilla(inputs, outputs, raw_seq, n_steps, batch_size, num_epochs)
+            btc_price["stacked"] = stacked(inputs, outputs, raw_seq, n_steps, batch_size, num_epochs)
+            btc_price["bidirectional"] = bidirectional(inputs, outputs, raw_seq, n_steps, batch_size, num_epochs)
             btc_price['open'], btc_price['close'] = open_seq[i], close_seq[i]
             if float(btc_price['open']) > btc_price["vanilla"]:
                 trade(w1, sell=True)
@@ -82,6 +83,7 @@ from data.prep_data import split_sequence_multistep
 from models.univariate_multistep import vectoroutput_vanilla, vectoroutput_stacked, vectoroutput_bidirectional
 def simulate_univariate_multistep():
     seq_size, n_steps_in, n_steps_out = 60, 3, 2
+    batch_size, num_epochs = 60, 100
     open_seq = get_binance_data('BTCBUSD', '1m', download=False, col_name='open')
     close_seq = get_binance_data('BTCBUSD', '1m', download=False, col_name='close')
     wallet = {'cash': 1000000, 'coins': 0, 'value': 1000000}
@@ -94,9 +96,9 @@ def simulate_univariate_multistep():
         for i in range(len(open_seq)-seq_size):
             raw_seq = open_seq[i:seq_size+i]
             inputs, outputs = split_sequence_multistep(raw_seq, n_steps_in, n_steps_out)
-            btc_price["vanilla"] = vectoroutput_vanilla(inputs, outputs, raw_seq, n_steps_in, n_steps_out)
-            btc_price["stacked"] = vectoroutput_stacked(inputs, outputs, raw_seq, n_steps_in, n_steps_out)
-            btc_price["bidirectional"] = vectoroutput_bidirectional(inputs, outputs, raw_seq, n_steps_in, n_steps_out)
+            btc_price["vanilla"] = vectoroutput_vanilla(inputs, outputs, raw_seq, n_steps_in, n_steps_out, batch_size, num_epochs)
+            btc_price["stacked"] = vectoroutput_stacked(inputs, outputs, raw_seq, n_steps_in, n_steps_out, batch_size, num_epochs)
+            btc_price["bidirectional"] = vectoroutput_bidirectional(inputs, outputs, raw_seq, n_steps_in, n_steps_out, batch_size, num_epochs)
             btc_price['open'], btc_price['close'] = open_seq[i], close_seq[i]
             if float(btc_price['open']) > btc_price["vanilla"][0] and float(btc_price['close']) < float(btc_price['open']) and float(btc_price['close']) > btc_price["vanilla"][1]:
                 trade(w1, sell=True)
@@ -126,6 +128,7 @@ from data.prep_data import split_sequences_multivariate_multiinput
 from models.multivariate import multiinput_vanilla, multiinput_stacked, multiinput_bidirectional
 def simulate_multivariate_multiinput():
     seq_size, n_steps = 60, 3
+    batch_size, num_epochs = 60, 100
     close_seq = array(get_binance_data('BTCBUSD', '1m', download=True, col_name='close'))
     open_seq = array(get_binance_data('BTCBUSD', '1m', download=False, col_name='open'))
     wallet = {'cash': 1000000, 'coins': 0, 'value': 1000000}
@@ -144,9 +147,9 @@ def simulate_multivariate_multiinput():
             out_seq = out_seq.reshape((len(out_seq), 1))
             dataset = hstack((in_seq1, in_seq2, out_seq))
             inputs_multiinput, outputs_multiinput = split_sequences_multivariate_multiinput(dataset, n_steps)
-            btc_price["vanilla"] = multiinput_vanilla(inputs_multiinput, outputs_multiinput, n_steps, in_seq1, in_seq2)
-            btc_price["stacked"] = multiinput_stacked(inputs_multiinput, outputs_multiinput, n_steps, in_seq1, in_seq2)
-            btc_price["bidirectional"] = multiinput_bidirectional(inputs_multiinput, outputs_multiinput, n_steps, in_seq1, in_seq2)
+            btc_price["vanilla"] = multiinput_vanilla(inputs_multiinput, outputs_multiinput, n_steps, in_seq1, in_seq2, batch_size, num_epochs)
+            btc_price["stacked"] = multiinput_stacked(inputs_multiinput, outputs_multiinput, n_steps, in_seq1, in_seq2, batch_size, num_epochs)
+            btc_price["bidirectional"] = multiinput_bidirectional(inputs_multiinput, outputs_multiinput, n_steps, in_seq1, in_seq2, batch_size, num_epochs)
             btc_price['open'], btc_price['close'] = open_seq[i], close_seq[i]
             if btc_price["vanilla"] < 0:
                 trade(w1, sell=True)
@@ -176,6 +179,7 @@ from data.prep_data import split_sequences_multivariate_multiparallel
 from models.multivariate import multiparallel_vanilla, multiparallel_stacked, multiparallel_bidirectional
 def simulate_multivariate_multiparallel():
     seq_size, n_steps = 60, 3
+    batch_size, num_epochs = 60, 100
     close_seq = array(get_binance_data('BTCBUSD', '1m', download=True, col_name='close'))
     open_seq = array(get_binance_data('BTCBUSD', '1m', download=False, col_name='open'))
     wallet = {'cash': 1000000, 'coins': 0, 'value': 1000000}
@@ -194,9 +198,9 @@ def simulate_multivariate_multiparallel():
             out_seq = out_seq.reshape((len(out_seq), 1))
             dataset = hstack((in_seq1, in_seq2, out_seq))
             inputs_multiparallel, outputs_multiparallel = split_sequences_multivariate_multiparallel(dataset, n_steps)
-            btc_price["vanilla"] = multiparallel_vanilla(inputs_multiparallel, outputs_multiparallel, n_steps, in_seq1, in_seq2)
-            btc_price["stacked"] = multiparallel_stacked(inputs_multiparallel, outputs_multiparallel, n_steps, in_seq1, in_seq2)
-            btc_price["bidirectional"] = multiparallel_bidirectional(inputs_multiparallel, outputs_multiparallel, n_steps, in_seq1, in_seq2)
+            btc_price["vanilla"] = multiparallel_vanilla(inputs_multiparallel, outputs_multiparallel, n_steps, in_seq1, in_seq2, batch_size, num_epochs)
+            btc_price["stacked"] = multiparallel_stacked(inputs_multiparallel, outputs_multiparallel, n_steps, in_seq1, in_seq2, batch_size, num_epochs)
+            btc_price["bidirectional"] = multiparallel_bidirectional(inputs_multiparallel, outputs_multiparallel, n_steps, in_seq1, in_seq2, batch_size, num_epochs)
             btc_price['open'], btc_price['close'] = open_seq[i], close_seq[i]
             if btc_price["vanilla"][2] < 0:
                 trade(w1, sell=True)
@@ -226,6 +230,7 @@ from data.prep_data import split_sequences_multivariate_multistep
 from models.multivariate_multistep import vanilla, stacked, bidirectional
 def simulate_multivariate_multistep():
     seq_size, n_steps_in, n_steps_out = 60, 3, 2
+    batch_size, num_epochs = 60, 100
     open_seq = get_binance_data('BTCBUSD', '1m', download=False, col_name='open')
     close_seq = get_binance_data('BTCBUSD', '1m', download=False, col_name='close')
     wallet = {'cash': 1000000, 'coins': 0, 'value': 1000000}
@@ -247,9 +252,9 @@ def simulate_multivariate_multistep():
             dataset = hstack((in_seq1, in_seq2, out_seq))
             # convert into input/output
             inputs, outputs = split_sequences_multivariate_multistep(dataset, n_steps_in, n_steps_out)
-            btc_price["vanilla"] = vanilla(inputs, outputs, n_steps_in, n_steps_out, in_seq1, in_seq2)
-            btc_price["stacked"] = stacked(inputs, outputs, n_steps_in, n_steps_out, in_seq1, in_seq2)
-            btc_price["bidirectional"] = bidirectional(inputs, outputs, n_steps_in, n_steps_out, in_seq1, in_seq2)
+            btc_price["vanilla"] = vanilla(inputs, outputs, n_steps_in, n_steps_out, in_seq1, in_seq2, batch_size, num_epochs)
+            btc_price["stacked"] = stacked(inputs, outputs, n_steps_in, n_steps_out, in_seq1, in_seq2, batch_size, num_epochs)
+            btc_price["bidirectional"] = bidirectional(inputs, outputs, n_steps_in, n_steps_out, in_seq1, in_seq2, batch_size, num_epochs)
             btc_price['open'], btc_price['close'] = open_seq[i], close_seq[i]
             if btc_price["vanilla"][0] < 0 and float(btc_price['close']) < float(btc_price['open']) and btc_price["vanilla"][1] < 0:
                 trade(w1, sell=True)

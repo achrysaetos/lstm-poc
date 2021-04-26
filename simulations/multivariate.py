@@ -18,7 +18,8 @@ btc_price = {'error':False, 'change':False}
 wallet = {'cash': 1000000, 'coins': 0, 'value': 1000000}
 
 def refresh(version):
-    seq_size, n_steps = 60, 3
+    seq_size, n_steps = 360, 5
+    batch_size, num_epochs = 60, 100
     in_seq1 = array(get_binance_data('BTCBUSD', '1m', download=True, col_name='close')[-seq_size:])
     in_seq2 = array(get_binance_data('BTCBUSD', '1m', download=False, col_name='open')[-seq_size:])
     out_seq = array([in_seq1[i]-in_seq2[i] for i in range(len(in_seq1))])
@@ -28,17 +29,17 @@ def refresh(version):
     dataset = hstack((in_seq1, in_seq2, out_seq))
     if version == "multiinput":
         inputs_multiinput, outputs_multiinput = split_sequences_multivariate_multiinput(dataset, n_steps)
-        btc_price["vanilla"] = multiinput_vanilla(inputs_multiinput, outputs_multiinput, n_steps, in_seq1, in_seq2)
-        btc_price["stacked"] = multiinput_stacked(inputs_multiinput, outputs_multiinput, n_steps, in_seq1, in_seq2)
-        btc_price["bidirectional"] = multiinput_bidirectional(inputs_multiinput, outputs_multiinput, n_steps, in_seq1, in_seq2)
+        btc_price["vanilla"] = multiinput_vanilla(inputs_multiinput, outputs_multiinput, n_steps, in_seq1, in_seq2, batch_size, num_epochs)
+        btc_price["stacked"] = multiinput_stacked(inputs_multiinput, outputs_multiinput, n_steps, in_seq1, in_seq2, batch_size, num_epochs)
+        btc_price["bidirectional"] = multiinput_bidirectional(inputs_multiinput, outputs_multiinput, n_steps, in_seq1, in_seq2, batch_size, num_epochs)
         print("Multi-input vanilla LSTM prediction:", btc_price["vanilla"])
         print("Multi-input stacked LSTM prediction:", btc_price["stacked"])
         print("Multi-input bidirectional prediction:", btc_price["bidirectional"])
     if version == "multiparallel":
         inputs_multiparallel, outputs_multiparallel = split_sequences_multivariate_multiparallel(dataset, n_steps)
-        btc_price["vanilla"] = multiparallel_vanilla(inputs_multiparallel, outputs_multiparallel, n_steps, in_seq1, in_seq2)
-        btc_price["stacked"] = multiparallel_stacked(inputs_multiparallel, outputs_multiparallel, n_steps, in_seq1, in_seq2)
-        btc_price["bidirectional"] = multiparallel_bidirectional(inputs_multiparallel, outputs_multiparallel, n_steps, in_seq1, in_seq2)
+        btc_price["vanilla"] = multiparallel_vanilla(inputs_multiparallel, outputs_multiparallel, n_steps, in_seq1, in_seq2, batch_size, num_epochs)
+        btc_price["stacked"] = multiparallel_stacked(inputs_multiparallel, outputs_multiparallel, n_steps, in_seq1, in_seq2, batch_size, num_epochs)
+        btc_price["bidirectional"] = multiparallel_bidirectional(inputs_multiparallel, outputs_multiparallel, n_steps, in_seq1, in_seq2, batch_size, num_epochs)
         print("Multi-parallel vanilla LSTM prediction:", btc_price["vanilla"])
         print("Multi-parallel stacked LSTM prediction:", btc_price["stacked"])
         print("Multi-parallel bidirectional prediction:", btc_price["bidirectional"])

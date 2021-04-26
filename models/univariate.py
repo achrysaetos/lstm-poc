@@ -11,6 +11,8 @@ from prep_data import split_sequence_univariate
 
 # choose a window and a number of time steps
 seq_size, n_steps = 360, 5
+# choose a batch size and a number of epochs
+batch_size, num_epochs = 60, 100
 # define input sequence
 raw_seq = get_binance_data('BTCBUSD', '1m')[-seq_size:]
 # split into samples
@@ -18,35 +20,35 @@ inputs, outputs = split_sequence_univariate(raw_seq, n_steps)
 
 # Basic LSTM models for sequential data------------------------------------------------------------------------------------------
 
-def vanilla(inputs, outputs, raw_seq, n_steps):
+def vanilla(inputs, outputs, raw_seq, n_steps, batch_size, num_epochs):
   # reshape from [samples, timesteps] into [samples, timesteps, features]
   n_features = 1
   inputs = inputs.reshape((inputs.shape[0], inputs.shape[1], n_features))
   # define model
   model = Sequential()
-  model.add(LSTM(50, activation='relu', input_shape=(n_steps, n_features)))
+  model.add(LSTM(batch_size, activation='relu', input_shape=(n_steps, n_features)))
   model.add(Dense(1))
   model.compile(optimizer='adam', loss='mse')
   # fit model
-  model.fit(inputs, outputs, epochs=200, verbose=0)
+  model.fit(inputs, outputs, epochs=num_epochs, verbose=0)
   # demonstrate prediction
   x_input = array(raw_seq[-n_steps:])
   x_input = x_input.reshape((1, n_steps, n_features))
   yhat = model.predict(x_input, verbose=0)
   return float(yhat[0][0])
 
-def stacked(inputs, outputs, raw_seq, n_steps):
+def stacked(inputs, outputs, raw_seq, n_steps, batch_size, num_epochs):
   # reshape from [samples, timesteps] into [samples, timesteps, features]
   n_features = 1
   inputs = inputs.reshape((inputs.shape[0], inputs.shape[1], n_features))
   # define model
   model = Sequential()
-  model.add(LSTM(50, activation='relu', return_sequences=True, input_shape=(n_steps, n_features)))
-  model.add(LSTM(50, activation='relu'))
+  model.add(LSTM(batch_size, activation='relu', return_sequences=True, input_shape=(n_steps, n_features)))
+  model.add(LSTM(batch_size, activation='relu'))
   model.add(Dense(1))
   model.compile(optimizer='adam', loss='mse')
   # fit model
-  model.fit(inputs, outputs, epochs=200, verbose=0)
+  model.fit(inputs, outputs, epochs=num_epochs, verbose=0)
   # demonstrate prediction
   x_input = array(raw_seq[-n_steps:])
   x_input = x_input.reshape((1, n_steps, n_features))
@@ -54,17 +56,17 @@ def stacked(inputs, outputs, raw_seq, n_steps):
   return float(yhat[0][0])
 
 from keras.layers import Bidirectional
-def bidirectional(inputs, outputs, raw_seq, n_steps):
+def bidirectional(inputs, outputs, raw_seq, n_steps, batch_size, num_epochs):
   # reshape from [samples, timesteps] into [samples, timesteps, features]
   n_features = 1
   inputs = inputs.reshape((inputs.shape[0], inputs.shape[1], n_features))
   # define model
   model = Sequential()
-  model.add(Bidirectional(LSTM(50, activation='relu'), input_shape=(n_steps, n_features)))
+  model.add(Bidirectional(LSTM(batch_size, activation='relu'), input_shape=(n_steps, n_features)))
   model.add(Dense(1))
   model.compile(optimizer='adam', loss='mse')
   # fit model
-  model.fit(inputs, outputs, epochs=200, verbose=0)
+  model.fit(inputs, outputs, epochs=num_epochs, verbose=0)
   # demonstrate prediction
   x_input = array(raw_seq[-n_steps:])
   x_input = x_input.reshape((1, n_steps, n_features))
@@ -77,7 +79,7 @@ from keras.layers import Flatten
 from keras.layers import TimeDistributed
 from keras.layers.convolutional import Conv1D
 from keras.layers.convolutional import MaxPooling1D
-def cnn(inputs, outputs, raw_seq, n_steps):
+def cnn(inputs, outputs, raw_seq, n_steps, batch_size, num_epochs):
   # reshape from [samples, timesteps] into [samples, subsequences, timesteps, features]
   n_features = 1
   n_seq = 2
@@ -88,11 +90,11 @@ def cnn(inputs, outputs, raw_seq, n_steps):
   model.add(TimeDistributed(Conv1D(filters=64, kernel_size=1, activation='relu'), input_shape=(None, n_steps, n_features)))
   model.add(TimeDistributed(MaxPooling1D(pool_size=2)))
   model.add(TimeDistributed(Flatten()))
-  model.add(LSTM(50, activation='relu'))
+  model.add(LSTM(batch_size, activation='relu'))
   model.add(Dense(1))
   model.compile(optimizer='adam', loss='mse')
   # fit model
-  model.fit(inputs, outputs, epochs=500, verbose=0)
+  model.fit(inputs, outputs, epochs=num_epochs, verbose=0)
   # demonstrate prediction
   x_input = array(raw_seq[-n_steps:])
   x_input = x_input.reshape((1, n_seq, n_steps, n_features))
@@ -101,7 +103,7 @@ def cnn(inputs, outputs, raw_seq, n_steps):
 
 from keras.layers import Flatten
 from keras.layers import ConvLSTM2D
-def conv(inputs, outputs, raw_seq, n_steps):
+def conv(inputs, outputs, raw_seq, n_steps, batch_size, num_epochs):
   # reshape from [samples, timesteps] into [samples, timesteps, rows, columns, features]
   n_features = 1
   n_seq = 2
@@ -114,7 +116,7 @@ def conv(inputs, outputs, raw_seq, n_steps):
   model.add(Dense(1))
   model.compile(optimizer='adam', loss='mse')
   # fit model
-  model.fit(inputs, outputs, epochs=500, verbose=0)
+  model.fit(inputs, outputs, epochs=num_epochs, verbose=0)
   # demonstrate prediction
   x_input = array(raw_seq[-n_steps:])
   x_input = x_input.reshape((1, n_seq, 1, n_steps, n_features))

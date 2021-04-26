@@ -12,6 +12,8 @@ from prep_data import split_sequences_multivariate_multiinput, split_sequences_m
 
 # choose a window and a number of time steps
 seq_size, n_steps = 360, 5
+# choose a batch size and a number of epochs
+batch_size, num_epochs = 60, 100
 # define input sequence
 in_seq1 = array(get_binance_data('BTCBUSD', '1m', download=True, col_name='close')[-seq_size:])
 in_seq2 = array(get_binance_data('BTCBUSD', '1m', download=False, col_name='open')[-seq_size:])
@@ -28,33 +30,33 @@ inputs_multiparallel, outputs_multiparallel = split_sequences_multivariate_multi
 
 # Multivariate multi-input models for triangulating predictions------------------------------------------------------------------
 
-def multiinput_vanilla(inputs_multiinput, outputs_multiinput, n_steps, in_seq1, in_seq2):
+def multiinput_vanilla(inputs_multiinput, outputs_multiinput, n_steps, in_seq1, in_seq2, batch_size, num_epochs):
   # the dataset knows the number of features, e.g. 2
   n_features = inputs_multiinput.shape[2]
   # define model
   model = Sequential()
-  model.add(LSTM(50, activation='relu', input_shape=(n_steps, n_features)))
+  model.add(LSTM(batch_size, activation='relu', input_shape=(n_steps, n_features)))
   model.add(Dense(1))
   model.compile(optimizer='adam', loss='mse')
   # fit model
-  model.fit(inputs_multiinput, outputs_multiinput, epochs=200, verbose=0)
+  model.fit(inputs_multiinput, outputs_multiinput, epochs=num_epochs, verbose=0)
   # demonstrate prediction
   x_input = array([[a,b] for a,b in zip(in_seq1[-n_steps:],in_seq2[-n_steps:])])
   x_input = x_input.reshape((1, n_steps, n_features))
   yhat = model.predict(x_input, verbose=0)
   return float(yhat[0][0])
 
-def multiinput_stacked(inputs_multiinput, outputs_multiinput, n_steps, in_seq1, in_seq2):
+def multiinput_stacked(inputs_multiinput, outputs_multiinput, n_steps, in_seq1, in_seq2, batch_size, num_epochs):
   # the dataset knows the number of features, e.g. 2
   n_features = inputs_multiinput.shape[2]
   # define model
   model = Sequential()
-  model.add(LSTM(50, activation='relu', return_sequences=True, input_shape=(n_steps, n_features)))
-  model.add(LSTM(50, activation='relu'))
+  model.add(LSTM(batch_size, activation='relu', return_sequences=True, input_shape=(n_steps, n_features)))
+  model.add(LSTM(batch_size, activation='relu'))
   model.add(Dense(1))
   model.compile(optimizer='adam', loss='mse')
   # fit model
-  model.fit(inputs_multiinput, outputs_multiinput, epochs=200, verbose=0)
+  model.fit(inputs_multiinput, outputs_multiinput, epochs=num_epochs, verbose=0)
   # demonstrate prediction
   x_input = array([[a,b] for a,b in zip(in_seq1[-n_steps:],in_seq2[-n_steps:])])
   x_input = x_input.reshape((1, n_steps, n_features))
@@ -62,16 +64,16 @@ def multiinput_stacked(inputs_multiinput, outputs_multiinput, n_steps, in_seq1, 
   return float(yhat[0][0])
 
 from keras.layers import Bidirectional
-def multiinput_bidirectional(inputs_multiinput, outputs_multiinput, n_steps, in_seq1, in_seq2):
+def multiinput_bidirectional(inputs_multiinput, outputs_multiinput, n_steps, in_seq1, in_seq2, batch_size, num_epochs):
   # the dataset knows the number of features, e.g. 2
   n_features = inputs_multiinput.shape[2]
   # define model
   model = Sequential()
-  model.add(Bidirectional(LSTM(50, activation='relu'), input_shape=(n_steps, n_features)))
+  model.add(Bidirectional(LSTM(batch_size, activation='relu'), input_shape=(n_steps, n_features)))
   model.add(Dense(1))
   model.compile(optimizer='adam', loss='mse')
   # fit model
-  model.fit(inputs_multiinput, outputs_multiinput, epochs=200, verbose=0)
+  model.fit(inputs_multiinput, outputs_multiinput, epochs=num_epochs, verbose=0)
   # demonstrate prediction
   x_input = array([[a,b] for a,b in zip(in_seq1[-n_steps:],in_seq2[-n_steps:])])
   x_input = x_input.reshape((1, n_steps, n_features))
@@ -80,33 +82,33 @@ def multiinput_bidirectional(inputs_multiinput, outputs_multiinput, n_steps, in_
 
 # Multivariate multi-parallel models for predicting multiple factors-------------------------------------------------------------
 
-def multiparallel_vanilla(inputs_multiparallel, outputs_multiparallel, n_steps, in_seq1, in_seq2):
+def multiparallel_vanilla(inputs_multiparallel, outputs_multiparallel, n_steps, in_seq1, in_seq2, batch_size, num_epochs):
   # the dataset knows the number of features, e.g. 2
   n_features = inputs_multiparallel.shape[2]
   # define model
   model = Sequential()
-  model.add(LSTM(100, activation='relu', input_shape=(n_steps, n_features)))
+  model.add(LSTM(batch_size, activation='relu', input_shape=(n_steps, n_features)))
   model.add(Dense(n_features))
   model.compile(optimizer='adam', loss='mse')
   # fit model
-  model.fit(inputs_multiparallel, outputs_multiparallel, epochs=400, verbose=0)
+  model.fit(inputs_multiparallel, outputs_multiparallel, epochs=num_epochs, verbose=0)
   # demonstrate prediction
   x_input = array([[a,b,a-b] for a,b in zip(in_seq1[-n_steps:],in_seq2[-n_steps:])])
   x_input = x_input.reshape((1, n_steps, n_features))
   yhat = model.predict(x_input, verbose=0)
   return float(yhat[0][0]), float(yhat[0][1]), float(yhat[0][2])
 
-def multiparallel_stacked(inputs_multiparallel, outputs_multiparallel, n_steps, in_seq1, in_seq2):
+def multiparallel_stacked(inputs_multiparallel, outputs_multiparallel, n_steps, in_seq1, in_seq2, batch_size, num_epochs):
   # the dataset knows the number of features, e.g. 2
   n_features = inputs_multiparallel.shape[2]
   # define model
   model = Sequential()
-  model.add(LSTM(100, activation='relu', return_sequences=True, input_shape=(n_steps, n_features)))
-  model.add(LSTM(100, activation='relu'))
+  model.add(LSTM(batch_size, activation='relu', return_sequences=True, input_shape=(n_steps, n_features)))
+  model.add(LSTM(batch_size, activation='relu'))
   model.add(Dense(n_features))
   model.compile(optimizer='adam', loss='mse')
   # fit model
-  model.fit(inputs_multiparallel, outputs_multiparallel, epochs=400, verbose=0)
+  model.fit(inputs_multiparallel, outputs_multiparallel, epochs=num_epochs, verbose=0)
   # demonstrate prediction
   x_input = array([[a,b,a-b] for a,b in zip(in_seq1[-n_steps:],in_seq2[-n_steps:])])
   x_input = x_input.reshape((1, n_steps, n_features))
@@ -114,16 +116,16 @@ def multiparallel_stacked(inputs_multiparallel, outputs_multiparallel, n_steps, 
   return float(yhat[0][0]), float(yhat[0][1]), float(yhat[0][2])
 
 from keras.layers import Bidirectional
-def multiparallel_bidirectional(inputs_multiparallel, outputs_multiparallel, n_steps, in_seq1, in_seq2):
+def multiparallel_bidirectional(inputs_multiparallel, outputs_multiparallel, n_steps, in_seq1, in_seq2, batch_size, num_epochs):
   # the dataset knows the number of features, e.g. 2
   n_features = inputs_multiparallel.shape[2]
   # define model
   model = Sequential()
-  model.add(Bidirectional(LSTM(100, activation='relu'), input_shape=(n_steps, n_features)))
+  model.add(Bidirectional(LSTM(batch_size, activation='relu'), input_shape=(n_steps, n_features)))
   model.add(Dense(n_features))
   model.compile(optimizer='adam', loss='mse')
   # fit model
-  model.fit(inputs_multiparallel, outputs_multiparallel, epochs=400, verbose=0)
+  model.fit(inputs_multiparallel, outputs_multiparallel, epochs=num_epochs, verbose=0)
   # demonstrate prediction
   x_input = array([[a,b,a-b] for a,b in zip(in_seq1[-n_steps:],in_seq2[-n_steps:])])
   x_input = x_input.reshape((1, n_steps, n_features))
