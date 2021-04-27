@@ -84,8 +84,8 @@ def simulate_univariate_multistep_realtime():
     w2 = {'cash': 1000000, 'coins': 0, 'value': 1000000}
     w3 = {'cash': 1000000, 'coins': 0, 'value': 1000000}
     wX = {'cash': 0, 'coins': 1000000/open_seq[0], 'value': 1000000}
-    with open('workspace.csv', mode='w') as workspace:
-        workspace_writer = csv.writer(workspace, delimiter=',', quotechar='"', quoting=csv.QUOTE_NONNUMERIC)
+    with open('univariate_multistep.csv', mode='w') as univariate_multistep:
+        univariate_multistep_writer = csv.writer(univariate_multistep, delimiter=',', quotechar='"', quoting=csv.QUOTE_NONNUMERIC)
         for i in range(len(open_seq)-seq_size):
             raw_seq = open_seq[i:seq_size+i]
             inputs, outputs = split_sequence_multistep(raw_seq, n_steps_in, n_steps_out)
@@ -110,7 +110,7 @@ def simulate_univariate_multistep_realtime():
             elif float(btc_price['open']) < min([btc_price["vanilla"][0], btc_price["stacked"][0], btc_price["bidirectional"][0]]) and float(btc_price['close']) < min([btc_price["vanilla"][1], btc_price["stacked"][1], btc_price["bidirectional"][1]]):
                 trade(wallet, buy=True)
             trade(wX)
-            workspace_writer.writerow([i, w1['value'], w2['value'], w3['value'], wallet['value'], wX['value']])
+            univariate_multistep_writer.writerow([i, w1['value'], w2['value'], w3['value'], wallet['value'], wX['value']])
             print(i, btc_price['open'], trade(w1))
             print(i, btc_price['open'], trade(w2))
             print(i, btc_price['open'], trade(w3))
