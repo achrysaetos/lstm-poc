@@ -26,11 +26,11 @@ w3 = {'cash': 1000000, 'coins': 0, 'value': 1000000, 'trades': 0}
 wX = {'cash': 0, 'coins': 1000000/open_seq[0], 'value': 1000000, 'trades': 0}
 
 def print_wallets(w1, w2, w3, wallet, wX, i):
-    print(i, btc_price['open'], trade(w1))
-    print(i, btc_price['open'], trade(w2))
-    print(i, btc_price['open'], trade(w3))
-    print(i, btc_price['open'], trade(wallet))
-    print(i, btc_price['open'], trade(wX))
+    print(i, btc_price['close'], trade(w1))
+    print(i, btc_price['close'], trade(w2))
+    print(i, btc_price['close'], trade(w3))
+    print(i, btc_price['close'], trade(wallet))
+    print(i, btc_price['close'], trade(wX))
 
 def trade(wallet, buy=False, sell=False):
     if sell:
@@ -55,7 +55,7 @@ def trade(wallet, buy=False, sell=False):
 from data.prep_data import split_sequences_multivariate_multistep
 from models.multivariate_multistep import vanilla, stacked, bidirectional
 def simulate_multivariate_multistep(seq_size, n_steps_in, n_steps_out, batch_size, num_epochs, open_seq, close_seq, wallet, w1, w2, w3, wX):
-    with open('multivariate_multistep.csv', mode='w') as multivariate_multistep:
+    with open('4-23-2021.csv', mode='w') as multivariate_multistep:
         multivariate_multistep_writer = csv.writer(multivariate_multistep, delimiter=',', quotechar='"', quoting=csv.QUOTE_NONNUMERIC)
         for i in range(len(open_seq)-seq_size):
             in_seq1 = array(close_seq[i:seq_size+i])
