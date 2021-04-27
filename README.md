@@ -4,7 +4,7 @@
 
 *To start: pip3 install numpy, tensorflow, keras, pandas, python-binance, python-dateutil; set binance_api_key and binance_api_secret in config.py; initialize virtual env with `source env/bin/activate`; run `python3 run_models.py`.*
 
-*Conclusion: Multivariate (multi-input) LSTMs and Multivariate (multi-input) multi-step LSTMs seem to be the most accurate when it comes to predicting crypto trends. However, each of the core Vanilla/Stacked/Bidirectional LSTMs appear to have no general edge over the others, and therefore the best results are reached when we combine all three in one model. For future research, we might implement Multivariate (multi-parallel) multistep LSTMs, but multi-input LSTMs appear to be more accurate than multi-parallel LSTMs, anyway.*
+*Conclusion: Multivariate (multi-input) multi-step LSTMs seem to be the most accurate when it comes to predicting crypto trends. However, each of the core Vanilla/Stacked/Bidirectional LSTMs appear to have no general edge over the others, and therefore the best results are reached when we combine all three in one model. For future research, we might implement Multivariate (multi-parallel) multistep LSTMs, but multi-input LSTMs appear to be more accurate than multi-parallel LSTMs, anyway.*
 
 **Why crypto?**
 1) Volatility. Crypto prices change enough for strategies to actually make a difference.

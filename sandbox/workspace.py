@@ -52,44 +52,6 @@ def trade(wallet, buy=False, sell=False):
     wallet['value'] = wallet['coins']*float(btc_price['close'])+wallet['cash']
     return wallet
 
-from data.prep_data import split_sequences_multivariate_multiinput
-from models.multivariate import multiinput_vanilla, multiinput_stacked, multiinput_bidirectional
-def simulate_multivariate_multiinput(seq_size, n_steps, batch_size, num_epochs, open_seq, close_seq, wallet, w1, w2, w3, wX):
-    with open('multivariate_multiinput.csv', mode='w') as multivariate_multiinput:
-        multivariate_multiinput_writer = csv.writer(multivariate_multiinput, delimiter=',', quotechar='"', quoting=csv.QUOTE_NONNUMERIC)
-        for i in range(len(open_seq)-seq_size):
-            in_seq1 = array(close_seq[i:seq_size+i])
-            in_seq2 = array(open_seq[i:seq_size+i])
-            out_seq = array([in_seq1[i]-in_seq2[i] for i in range(len(in_seq1))])
-            in_seq1 = in_seq1.reshape((len(in_seq1), 1))
-            in_seq2 = in_seq2.reshape((len(in_seq2), 1))
-            out_seq = out_seq.reshape((len(out_seq), 1))
-            dataset = hstack((in_seq1, in_seq2, out_seq))
-            inputs_multiinput, outputs_multiinput = split_sequences_multivariate_multiinput(dataset, n_steps)
-            btc_price["vanilla"] = multiinput_vanilla(inputs_multiinput, outputs_multiinput, n_steps, in_seq1, in_seq2, batch_size, num_epochs)
-            btc_price["stacked"] = multiinput_stacked(inputs_multiinput, outputs_multiinput, n_steps, in_seq1, in_seq2, batch_size, num_epochs)
-            btc_price["bidirectional"] = multiinput_bidirectional(inputs_multiinput, outputs_multiinput, n_steps, in_seq1, in_seq2, batch_size, num_epochs)
-            btc_price['open'], btc_price['close'] = open_seq[i], close_seq[i]
-            if btc_price["vanilla"] < 0:
-                trade(w1, sell=True)
-            elif btc_price["vanilla"] > 0:
-                trade(w1, buy=True)
-            if btc_price["stacked"] < 0:
-                trade(w2, sell=True)
-            elif btc_price["stacked"] > 0:
-                trade(w2, buy=True)
-            if btc_price["bidirectional"] < 0:
-                trade(w3, sell=True)
-            elif btc_price["bidirectional"] > 0:
-                trade(w3, buy=True)
-            if max([btc_price["vanilla"], btc_price["stacked"], btc_price["bidirectional"]]) < 0:
-                trade(wallet, sell=True)
-            elif min([btc_price["vanilla"], btc_price["stacked"], btc_price["bidirectional"]]) > 0:
-                trade(wallet, buy=True)
-            trade(wX)
-            multivariate_multiinput_writer.writerow([i, w1['value'], w2['value'], w3['value'], wallet['value'], wX['value']])
-            print_wallets(w1, w2, w3, wallet, wX, i)
-
 from data.prep_data import split_sequences_multivariate_multistep
 from models.multivariate_multistep import vanilla, stacked, bidirectional
 def simulate_multivariate_multistep(seq_size, n_steps_in, n_steps_out, batch_size, num_epochs, open_seq, close_seq, wallet, w1, w2, w3, wX):
@@ -131,5 +93,4 @@ def simulate_multivariate_multistep(seq_size, n_steps_in, n_steps_out, batch_siz
             multivariate_multistep_writer.writerow([i, w1['value'], w2['value'], w3['value'], wallet['value'], wX['value']])
             print_wallets(w1, w2, w3, wallet, wX, i)
 
-# simulate_multivariate_multiinput(seq_size, n_steps, batch_size, num_epochs, open_seq, close_seq, wallet, w1, w2, w3, wX)
-# simulate_multivariate_multistep(seq_size, n_steps_in, n_steps_out, batch_size, num_epochs, open_seq, close_seq, wallet, w1, w2, w3, wX)
+simulate_multivariate_multistep(seq_size, n_steps_in, n_steps_out, batch_size, num_epochs, open_seq, close_seq, wallet, w1, w2, w3, wX)
