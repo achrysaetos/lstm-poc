@@ -232,9 +232,9 @@ def simulate_multivariate_multistep(seq_size, n_steps_in, n_steps_out, batch_siz
             print_wallets(w1, w2, w3, wallet, wX, i)
 
 """
-simulate_univariate()
-simulate_univariate_multistep()
-simulate_multivariate_multiinput()
-simulate_multivariate_multiparallel()
-simulate_multivariate_multistep()
+simulate_univariate(seq_size, n_steps, batch_size, num_epochs, open_seq, close_seq, wallet, w1, w2, w3, wX)
+simulate_univariate_multistep(seq_size, n_steps_in, n_steps_out, batch_size, num_epochs, open_seq, close_seq, wallet, w1, w2, w3, wX)
+simulate_multivariate_multiinput(seq_size, n_steps, batch_size, num_epochs, open_seq, close_seq, wallet, w1, w2, w3, wX)
+simulate_multivariate_multiparallel(seq_size, n_steps, batch_size, num_epochs, open_seq, close_seq, wallet, w1, w2, w3, wX)
+simulate_multivariate_multistep(seq_size, n_steps_in, n_steps_out, batch_size, num_epochs, open_seq, close_seq, wallet, w1, w2, w3, wX)
 """
