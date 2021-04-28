@@ -29,3 +29,5 @@ Random walk tells us we can't predict prices in the short run. But if computers 
 
 **Notes:**\
 *Alternatively, we might not even care about the trend of a price at a given moment in time if we know that it is inevitably going to fall or rise anyway. If we can predict the general trend of the price and the feasibility of how much it will fall or rise, we can buy or sell with confidence when the price reaches either of our limits.*
+
+*All you really need to do is know when to sell -- just predict big drops, otherwise just hold by default.*
