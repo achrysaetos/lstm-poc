@@ -32,6 +32,9 @@ def print_wallets(w1, w2, w3, wallet, wX, i):
     print(i, btc_price['close'], trade(w3))
     print(i, btc_price['close'], trade(wallet))
     print(i, btc_price['close'], trade(wX))
+def print_states(x):
+    if x%2 == 0: return 'sold'
+    if x%2 == 1: return 'bought'
 
 def trade(wallet, buy=False, sell=False):
     FEE = .001
@@ -99,7 +102,7 @@ def simulate_multivariate_multistep(seq_size, n_steps_in, n_steps_out, batch_siz
                 trade(wallet, buy=True)
             print(states)
             trade(wX)
-            multivariate_multistep_writer.writerow([i, w1['value'], w2['value'], w3['value'], wallet['value'], wX['value']])
+            multivariate_multistep_writer.writerow([i, w1['value'], w2['value'], w3['value'], wallet['value'], wX['value'], btc_price['open'], btc_price['close'], btc_price["vanilla"][0], btc_price["stacked"][0], btc_price["bidirectional"][0], btc_price["vanilla"][1], btc_price["stacked"][1], btc_price["bidirectional"][1], print_states(w1['trades']), print_states(w2['trades']), print_states(w3['trades']), print_states(wallet['trades'])])
             print_wallets(w1, w2, w3, wallet, wX, i)
 
 simulate_multivariate_multistep(seq_size, n_steps_in, n_steps_out, batch_size, num_epochs, open_seq, close_seq, wallet, w1, w2, w3, wX)
