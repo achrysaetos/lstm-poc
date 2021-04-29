@@ -15,9 +15,9 @@ from data.get_data import get_binance_data
 client = Client(api_key=binance_api_key, api_secret=binance_api_secret)
 btc_price = {'error':False, 'buy_next_period':False, 'sell_next_period':False}
 states = {'vanilla':'hold', 'stacked':'hold', 'bidirectional':'hold'}
-seq_size, n_steps = 60, 3
-n_steps_in, n_steps_out = 3, 2
-batch_size, num_epochs = 30, 100
+seq_size, n_steps = 180, 5
+n_steps_in, n_steps_out = 5, 2
+batch_size, num_epochs = 60, 200
 open_seq = get_binance_data('BTCBUSD', '1m', download=True, col_name='open')
 close_seq = get_binance_data('BTCBUSD', '1m', download=True, col_name='close')
 wallet = {'cash': 1000000, 'coins': 0, 'value': 1000000, 'trades': 0}
@@ -71,7 +71,7 @@ def simulate_multivariate_multistep(seq_size, n_steps_in, n_steps_out, batch_siz
             btc_price["vanilla"] = vanilla(inputs, outputs, n_steps_in, n_steps_out, in_seq1, in_seq2, batch_size, num_epochs)
             btc_price["stacked"] = stacked(inputs, outputs, n_steps_in, n_steps_out, in_seq1, in_seq2, batch_size, num_epochs)
             btc_price["bidirectional"] = bidirectional(inputs, outputs, n_steps_in, n_steps_out, in_seq1, in_seq2, batch_size, num_epochs)
-            btc_price['open'], btc_price['close'] = open_seq[i], close_seq[i]
+            btc_price['open'], btc_price['close'] = open_seq[seq_size+i], close_seq[seq_size+i]
             if btc_price["vanilla"][0] < 0 and float(btc_price['close']) < float(btc_price['open']) and btc_price["vanilla"][1] < 0:
                 trade(w1, sell=True)
                 states['vanilla'] = 'sell'
@@ -102,7 +102,7 @@ def simulate_multivariate_multistep(seq_size, n_steps_in, n_steps_out, batch_siz
                 trade(wallet, buy=True)
             print(states)
             trade(wX)
-            multivariate_multistep_writer.writerow([i, w1['value'], w2['value'], w3['value'], wallet['value'], wX['value'], btc_price['open'], btc_price['close'], btc_price["vanilla"][0], btc_price["stacked"][0], btc_price["bidirectional"][0], btc_price["vanilla"][1], btc_price["stacked"][1], btc_price["bidirectional"][1], print_states(w1['trades']), print_states(w2['trades']), print_states(w3['trades']), print_states(wallet['trades'])])
-            print_wallets(w1, w2, w3, wallet, wX, i)
+            multivariate_multistep_writer.writerow([seq_size+i, w1['value'], w2['value'], w3['value'], wallet['value'], wX['value'], btc_price['open'], btc_price['close'], btc_price["vanilla"][0], btc_price["stacked"][0], btc_price["bidirectional"][0], btc_price["vanilla"][1], btc_price["stacked"][1], btc_price["bidirectional"][1], print_states(w1['trades']), print_states(w2['trades']), print_states(w3['trades']), print_states(wallet['trades'])])
+            print_wallets(w1, w2, w3, wallet, wX, seq_size+i)
 
 simulate_multivariate_multistep(seq_size, n_steps_in, n_steps_out, batch_size, num_epochs, open_seq, close_seq, wallet, w1, w2, w3, wX)
